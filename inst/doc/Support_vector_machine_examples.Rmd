@@ -1,0 +1,609 @@
+---
+title: "Support_vector_machine_examples"
+author: "Raymaekers, J. and Rousseeuw, P.J."
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Support_vector_machine_examples}
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+ fig.width  = 5 ,
+ fig.height = 3.5,
+ fig.align  = 'center'
+)
+oldpar <- list(mar = par()$mar, mfrow = par()$mfrow)
+```
+
+# Introduction
+
+This file illustrates the class map for visualizing classification results
+from a support vector machine, as well as some of the other tools in the class map
+package.
+
+```{r}
+library("e1071")
+library("classmap")
+```
+
+
+# Small toy example
+
+The example from the paper, the Amazon book reviews data, takes a long time to
+run. As a simpler illustration we first run a small toy example.
+
+The data is artificial and copied verbatim from Section  9.6.2 (page 363) of
+"An Introduction to Statistical Learning" by G. James, D. Witten, T. Hastie
+and R. Tibshirani (Springer eBook, eighth printing, 2017).
+
+
+First generate the data and inspect it. We see that class 1 is disconnected,
+and class 2 lies in the middle. In the original space, linear separation
+is not possible.
+
+```{r}
+set.seed(1)
+X = matrix(rnorm(200*2),ncol=2)
+X[1:100,] = X[1:100,]+2
+X[101:150,] = X[101:150,]-2
+y = as.factor(c(rep("blue",150),rep("red",50))) # two classes
+table(y)
+dim(X) # 200 2
+length(y) # 200
+cols = c("deepskyblue3","red")
+col = cols[as.numeric(y)]
+plot(X,col=col,pch=19) 
+```
+
+
+We now fit an SVM with radial basis kernel to the data. We fix the seed in order
+to make the result of svm() reproducible:
+```{r}
+dat = data.frame(X=X,y=y)
+set.seed(1) 
+svmfit = svm(y~.,data=dat,scale=F,kernel="radial",cost=10,
+             gamma=1, probability=T)
+```
+
+Now we inspect the fitted svm. We also plot the decision values and the fit.
+We see that the decision value separates the classes reasonably well. The 
+decision boundary is far from linear, but it is linear in the feature space:
+
+```{r}
+names(svmfit)
+
+plot(svmfit$decision.values,col=cols[as.numeric(y)]); abline(h=0)
+
+plot(svmfit,data=dat,X.2~X.1, col = cols)
+```
+
+Now we build the vcr object for the trained svm:
+
+```{r}
+vcr.train = vcr.svm.train(X, y, svfit=svmfit)
+```
+
+We inspect the output, which contains among other things the prediction
+as integer, the prediction as label, the alternative label as integer and
+the alternative label:
+
+```{r}
+names(vcr.train)
+vcr.train$predint 
+vcr.train$pred    
+vcr.train$altint  
+vcr.train$altlab  
+```
+
+Now inspect the Probability of Alternative Class (PAC) of each object, which
+is one of the ingredients for the class map:
+
+```{r}
+vcr.train$PAC[1:3] 
+summary(vcr.train$PAC)
+```
+
+The $fig element of the output contains the distance from case i to class g. Let's
+look at it for the first 5 objects:
+
+```{r}
+vcr.train$fig[1:5,] 
+```
+From the fig, the farness of each object can be computed. The farness of an object i is the f(i,g) to its own class: 
+
+```{r}
+vcr.train$farness[1:5]
+summary(vcr.train$farness)
+```
+
+
+The "overall farness" of an object is defined as the lowest f(i,g) it has to any class g (including its own):
+
+```{r}
+summary(vcr.train$ofarness)
+```
+
+
+Objects with ofarness > cutoff are flagged as "outliers". These can be included
+in a separate column in the confusion matrix. This confusion matrix can be 
+computed using confmat.vcr, which also returns the accuracy.
+To illustrate this we choose a rather low cutoff:
+
+```{r}
+confmat.vcr(vcr.train, cutoff = 0.975)
+```
+
+With the default cutoff = 0.99 no objects are flagged in this example:
+
+```{r}
+confmat.vcr(vcr.train)
+```
+
+Note that the accuracy is computed before any objects are flagged, so it does not depend on the cutoff.
+
+The confusion matrix can also be constructed showing class numbers instead of labels. This option can be useful for long level names.
+
+```{r}
+confmat.vcr(vcr.train,showClassNumbers=T)
+```
+
+A stacked mosaic plot made with the stackedplot() function can be used to visualize the confusion matrix. The outliers, if there are any, appear as grey areas on top.
+
+```{r}
+stackedplot(vcr.train, classCols = cols, separSize = 1.5,
+            minSize=1, showLegend=T, cutoff = 0.975)
+
+stplot = stackedplot(vcr.train, classCols = cols, 
+                     separSize = 1.5, minSize = 1)
+stackedplot(vcr.train,classCols=cols)
+```
+
+We now make the class maps based on the vcr object. This can be done using the
+classmap() function. We make a separate class map for each of the two classes.
+We see that for class 1 (blue), most of the points have a low PAC, with some
+exceptions that are assigned to the red class. For class 2, the PAC is
+typically higher than in class 1.
+
+```{r}
+par(mfrow = c(1,1))
+classmap(vcr.train,1,classCols=cols)
+classmap(vcr.train,2,classCols=cols)
+par(oldpar)
+```
+***
+
+To illustrate the use of new data we create a fake dataset which is a subset
+of the training data, where not all classes occur, and ynew has NA's.
+
+
+```{r}
+Xnew = X[c(1:25,151:175),]; dim(Xnew) # 50 200
+ynew = y
+ynew[c(21:25,171:175)] = NA
+(ynew = ynew[c(1:25,151:175)]) 
+length(ynew) # 50
+```
+
+
+Now we build the vcr object on the training data.
+
+```{r}
+vcr.test = vcr.svm.newdata(Xnew,ynew,vcr.train)
+```
+
+
+Inspect some of the output in the vcr object:
+
+```{r}
+vcr.test$predint 
+length(vcr.test$predint) 
+vcr.test$altint 
+length(vcr.test$altint) 
+vcr.test$PAC 
+length(vcr.test$PAC) 
+vcr.test$farness 
+length(vcr.test$farness) 
+vcr.test$ofarness 
+length(vcr.test$ofarness) 
+```
+
+Now perform some check to confirm that it corresponds with what we would
+expect, given that the test data is a subset of the training data:
+
+```{r}  
+plot(vcr.test$yintnew[c(1:20,26:45)],
+     vcr.train$yint[c(1:20,151:170)]); abline(0,1)
+plot(vcr.test$predint[c(1:20,26:45)],
+     vcr.train$predint[c(1:20,151:170)]); abline(0,1)
+plot(vcr.test$altint[c(1:20,26:45)],
+     vcr.train$altint[c(1:20,151:170)]); abline(0,1)
+plot(vcr.test$PAC[c(1:20,26:45)],
+     vcr.train$PAC[c(1:20,151:170)]); abline(0,1)
+plot(as.vector(vcr.test$fig[c(1:20,26:45),]),
+     as.vector(vcr.train$fig[c(1:20,151:170),])); abline(0,1)
+plot(vcr.test$farness[c(1:20,26:45)],
+     vcr.train$farness[c(1:20,151:170)]); abline(0,1)
+plot(vcr.test$ofarness[c(1:20,26:45)],
+     vcr.train$ofarness[c(1:20,151:170)]); abline(0,1)
+```
+
+
+Now we redo the analysis in feature space. What do these data look like
+in feature space? In order to answer the question, we first compute the
+gaussian kernel used in svmfit:
+
+```{r}  
+Kxx = makeKernel(X,svfit=svmfit)
+dim(Kxx) 
+```
+
+Now we can compute a representation of these points in feature space.
+The function MakeFV() takes a kernel, and from it creates a feature space
+with the desired inner products. The kernel matrix has a few eigenvalues
+below the precision precS, and this is taken into account:
+
+```{r} 
+outFV = makeFV(Kxx)
+Xf = outFV$Xf 
+```
+
+As a sanity check, we make sure that the kernel matrix and
+the inner products of Xf match (almost exactly):
+
+```{r} 
+max(abs(as.vector(Kxx - Xf%*%t(Xf)))) # tiny, this is good.
+```
+
+
+The rows of Xf are in 196-dimensional space, do we need all of those
+dimensions? It turns out that we do need many. More precisely, we need 39
+components to explain 95% of the variance. That's many when starting
+from bivariate data.
+
+```{r} 
+explvar = cumsum(apply(Xf,2,var))
+plot(explvar/explvar[ncol(Xf)]); abline(h=0.95)
+min(which(explvar > 0.95*explvar[ncol(Xf)])) 
+```
+
+We inspect the data in feature space a little bit more.
+We see that all points in Xf lie on the unit sphere. This is always true for the 
+radial basis kernel.
+
+```{r} 
+range(rowSums(Xf^2)) 
+```
+
+In some of the pairwise plots, we can also see spherical effects.
+The data does look more separable here than in the original two-dimensional 
+space.
+
+```{r} 
+pairs(Xf[,1:5], col=col)
+plot(Xf[,1],Xf[,5],col=col,pch=19)
+```
+
+
+Now we run SVM on Xf with **linear** kernel and the same cost. This yields
+the same result as above:
+
+```{r}
+Xfdat = data.frame(X=Xf,y=y)
+set.seed(1)
+svmfit1 = svm(y~.,data=Xfdat,scale=F,kernel="linear",cost=10,
+              probability=T)
+plot(svmfit1$decision.values,svmfit$decision.values); abline(0,1)
+vcr.trainf = vcr.svm.train(X=Xf, y, svfit=svmfit1)
+```
+
+We see that everything matches with the original svm which was trained
+using a gaussian kernel on the original data:
+
+```{r}
+plot(vcr.train$yint,vcr.trainf$yint); abline(0,1)
+plot(vcr.train$predint,vcr.trainf$predint); abline(0,1)
+plot(vcr.train$altint,vcr.trainf$altint); abline(0,1)
+plot(vcr.train$PAC,vcr.trainf$PAC); abline(0,1)
+plot(vcr.train$fig,vcr.trainf$fig); abline(0,1)
+vcr.train$figparams$farscales
+plot(vcr.train$farness,vcr.trainf$farness); abline(0,1)
+plot(vcr.train$ofarness,vcr.trainf$ofarness); abline(0,1)
+```
+
+We now make a test data with NA's in ynew, but in feature space:
+
+```{r}
+Xnew = Xf[c(1:25,151:175),]; dim(Xnew) 
+```
+
+Using this test data, we build a new vcr object:
+
+```{r}
+vcr.testf = vcr.svm.newdata(Xnew,ynew,vcr.trainf)
+```
+
+Again, we see an exact match with original version:
+
+```{r}
+plot(vcr.testf$yintnew,vcr.test$yintnew); abline(0,1)
+plot(vcr.testf$predint,vcr.test$predint); abline(0,1)
+plot(vcr.testf$altint,vcr.test$altint); abline(0,1)
+plot(vcr.testf$PAC,vcr.test$PAC); abline(0,1)
+plot(vcr.testf$fig,vcr.test$fig); abline(0,1)
+plot(vcr.testf$farness,vcr.test$farness); abline(0,1)
+```
+***
+
+
+
+# Amazon book review data
+
+
+```{r}
+data(data_bookReviews)
+X = data_bookReviews[1:500, 1]; y = data_bookReviews[1:500, 2] 
+Xnew  = data_bookReviews[501:1000, 1]; ynew = data_bookReviews[501:1000, 2] 
+length(X); length(Xnew); length(y); length(ynew) 
+```
+
+This is a subset of the data used in the paper, which
+was assembled by Prettenhofer and Stein (2010), see
+https://arxiv.org/abs/1008.0716
+
+The full dataset has been used for a variety of things, including 
+classification using svm.
+A list of citations:
+https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&
+  sciodt=0%2C5&cites=4738650459241064524&scipsc=1&q=svm+&btnG=
+
+The subset was chosen small enough to keep the computation
+time low, while still containing the examples in the paper.
+
+
+
+First we define the colors and inspect an example of a book review:
+
+```{r}
+cols = c("deepskyblue3","red")
+col = cols[as.numeric(y)]
+X[5]
+```
+
+The next question is what kernel to use. There are many string kernels. 
+kernlab provides several options:
+The "spectrum" kernel matches substrings of an exact size.
+The "boundrange" kernel matches substrings of a length up 
+  to a given size.
+The "constant" kernel matches all substrings.
+The "exponential" kernel matches all substrings but gives 
+  different weights depending on the length of the matched
+  string.
+
+The best kernel for these data in terms of accuracy turned 
+out to be the spectrum kernel with length 7:
+
+```{r}
+strdot = kernlab::stringdot(type = "spectrum", length = 7)
+strdot
+ptm = proc.time()
+Kr_train = kernlab::kernelMatrix(kernel=strdot, x=X)
+(proc.time()-ptm)[3] 
+dim(Kr_train) 
+```
+
+Using the makeFV() function, we can compute the corresponding points in
+feature space. It takes into account almost-zero eigenvalues.
+The resulting Xf can be seen as the scores of a kernel PCA without centering
+(mean subtraction).
+
+```{r}
+outFV = makeFV(Kr_train)
+Xf = outFV$Xf 
+dim(Xf) 
+```
+
+
+To see how well these feature vectors and Kr_train match, we can compute the 
+inner products in Xf, and verify that they are close to Kr_train:
+
+```{r}
+inprod = Xf%*%t(Xf) 
+max(abs(as.vector(Kr_train-inprod))) 
+```
+
+We can also verify that the points of Xf lie on the unit sphere in
+500 dimensions:
+
+```{r}
+range(rowSums(Xf^2)) # all 1
+```
+
+
+By construction, the variables of Xf are uncorrelated.
+In order to explain 95% of the variance in the data, we need 463 out of
+the 500 components, so we are in a truly high dimensional situation:
+
+```{r}
+explvar = cumsum(apply(Xf,2,var))
+plot(explvar/explvar[ncol(Xf)]); abline(h=0.95)
+min(which(explvar > 0.95*explvar[ncol(Xf)]))
+```
+
+
+Now we can train the support vector classifier on these data.
+On Xf we train the SVM with the LINEAR kernel, since
+we are in feature space:
+
+```{r}
+Xfdat = data.frame(X = Xf, y = y)
+set.seed(1) # we have to fix the seed!
+svmfit = svm(y~.,data=Xfdat,scale=F,kernel="linear",cost=2,
+             probability=T)
+```
+
+We plot the decision values. the two horizontal lines
+contain the support vectors. There are a lot of them,
+since the dimension is high.
+
+```{r}
+plot(svmfit$decision.values) 
+```
+
+Now create the VCR object of the training data:
+
+```{r}
+vcr.train = vcr.svm.train(Xf, y, svfit=svmfit)
+```
+
+Using the VCR object, we can build the confusion matrix. We see that the
+accuracy is 100%.
+This classification is perfect due to overfitting!
+
+```{r}
+confmat.vcr(vcr.train, showOutliers = F)
+```
+
+The classification on the test data is more interesting.
+First construct the kernel matrix we need to classify the test data, 
+which takes roughly a minute:
+
+```{r}
+ptm = proc.time()
+Kr_test = kernlab::kernelMatrix(kernel=strdot, x=Xnew, y=X)
+(proc.time()-ptm)[3] 
+```
+
+Now we compute feature vectors of the test set. These features live
+in the same space as the Xf of the training data.
+
+```{r}
+FVtest = makeFV(kmat=Kr_test, transfmat=outFV$transfmat)
+Zf = FVtest$Xf 
+dim(Zf) 
+```
+
+We compare the inner products with the kernel matrix to make sure that they are
+the same:
+
+```{r}
+inprod = Zf%*%t(Xf) 
+max(abs(as.vector(Kr_test-inprod))) # tiny, good.
+```
+
+Now create the VCR object of the test data:
+
+```{r}
+vcr.test = vcr.svm.newdata(Zf,ynew,vcr.train)
+```
+
+Compute the confusion matrix from the VCR object.  In the full dataset, the 
+accuracy was 82 %. Here we achieve roughly 74% accuracy, which is lower
+since training was done on 500 texts instead of 2000.
+
+```{r}
+confmat.vcr(vcr.test)
+```
+
+The stacked mosaic plot of the classification is presented below:
+
+```{r}
+stackedplot(vcr.test,classCols=cols,separSize=1.5,minSize=1.5)
+```
+
+Now we build the class maps for the test set.
+First the class map of the negative reviews:
+
+```{r}
+# To identify the atypical points, uncomment the next line:
+# classmap(vcr.test,1,classCols=cols,identify=T)
+# Identified point(s): 
+# [1]  67 127 118 145  94  45
+#
+# pdf("Bookreviews_500_classmap_test_negative.pdf")
+par(mar = c(3.5, 3.5, 2.0, 0.2))
+coords = classmap(vcr.test, 1, classCols = cols, cex = 1.5,
+                  main = "predictions of the negative book reviews",
+                  cex.lab = 1.5, cex.axis = 1.5, cex.main = 1.5,
+                  maxfactor = 1.05, identify = FALSE)
+indstomark = c(67, 127, 118, 145, 94, 45) # from identify=T above
+labs  = c(  "a",  "b", "x",  "c",   "d",  "e")
+xvals = coords[indstomark, 1] +
+   c(-0.08, 0, 0, 0.09, 0.09, 0.09) # visual fine tuning
+yvals = coords[indstomark, 2] +
+   c(0, 0.033, 0.030, 0, 0, 0)
+text(x = xvals, y = yvals, labels = labs, cex = 1.5)
+legend("topright", fill = cols,
+       legend = c("negative", "positive"), cex = 1.4,
+       ncol = 1, bg = "white")
+# dev.off()
+par(oldpar)
+```
+
+We marked the following points:
+
+```{r}
+(Xnew[which(ynew == 1)])[67] # (a) in the paper.
+
+(Xnew[which(ynew == 1)])[127] # (b) in the paper.
+
+(Xnew[which(ynew == 1)])[118] # (x) 
+# Negative review, but highly recommends another book!
+
+(Xnew[which(ynew == 1)])[145] # (c) in the paper.
+# Contains some grammatical errors
+# Is negative, but expressed very indirectly.
+
+(Xnew[which(ynew == 1)])[94] # (d) in the paper. 
+# Definitely negative, but quite short.
+
+(Xnew[which(ynew == 1)])[45] # (e) in the paper.
+```
+
+Now the class map of the positive reviews in the test set:
+
+```{r}
+#
+# To identify the atypical points:
+# classmap(vcr.test,2,classCols=cols,identify=T)
+# Identified point(s): 
+# [1] 48  32 18 168 113
+#
+# pdf("Bookreviews_500_classmap_test_positive.pdf")
+par(mar = c(3.5, 3.5, 2.0, 0.2))
+coords = classmap(vcr.test, 2, classCols = cols, cex = 1.5,
+                  main = "predictions of the positive book reviews",
+                  cex.lab = 1.5, cex.axis = 1.5, cex.main = 1.5,
+                  maxfactor = 1.05, identify = FALSE)
+indstomark = c(48, 32, 18, 168, 113) # from identify=T above
+coords[indstomark,]
+labs  = c( "f",   "g",  "h",  "i",  "j")
+xvals = coords[indstomark, 1] +
+   c(0, 0, 0.09, 0.09, 0.09) # visual fine tuning
+yvals = coords[indstomark, 2] +
+   c(0.032, 0.032, 0, 0, 0)
+text(x = xvals, y = yvals, labels = labs, cex = 1.5)
+legend("left", fill = cols,
+       legend = c("negative", "positive"), cex = 1.4,
+       ncol = 1, bg = "white")
+# dev.off()
+par(oldpar)
+```
+
+We marked the following points:
+
+```{r}
+(Xnew[which(ynew == 2)])[48] # (f) in the paper.
+
+(Xnew[which(ynew == 2)])[32] # (g) in the paper.
+
+(Xnew[which(ynew == 2)])[18] # (h) in the paper.
+
+(Xnew[which(ynew == 2)])[168] # (i) in the paper.
+
+(Xnew[which(ynew == 2)])[113] # (j) in the paper.
+# very short (and spelling error).
+```
+***

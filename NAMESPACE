@@ -1,0 +1,26 @@
+
+import("ggplot2")
+import("e1071")
+importFrom("robustbase", "covMcd")
+importFrom("cellWise", "transfo", "truncPC")
+importFrom("cluster", "daisy")
+importFrom("grDevices", "adjustcolor", "rainbow")
+importFrom("graphics", "abline", "axis", "par", "rect", "title")
+importFrom("stats", "coef", "cov", "dist", "mad", "mahalanobis",
+               "median", "pnorm", "prcomp", "qnorm", "sd", "predict")
+
+export(makeKernel)
+export(makeFV)
+
+export(vcr.da.train)
+export(vcr.da.newdata)
+
+export(vcr.knn.train)
+export(vcr.knn.newdata)
+
+export(vcr.svm.train)
+export(vcr.svm.newdata)
+
+export(confmat.vcr)
+export(stackedplot)
+export(classmap)
