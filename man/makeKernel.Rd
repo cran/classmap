@@ -22,8 +22,7 @@ makeKernel(X1, X2 = NULL, svfit)
 }
 
 \references{
-Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing
-classification results. \emph{Technometrics}, forthcoming. \href{https://arxiv.org/abs/2007.14495}{(link to open access pdf)}
+Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing classification results. \emph{Technometrics}, appeared online. \doi{10.1080/00401706.2021.1927849}{(link to open access pdf)}
 }
 
 \author{
@@ -36,7 +35,7 @@ classification results. \emph{Technometrics}, forthcoming. \href{https://arxiv.o
 
 \examples{
 
-library(e1071); library(kernlab)
+library(e1071)
 set.seed(1); X = matrix(rnorm(200*2),ncol=2)
 X[1:100,] = X[1:100,]+2
 X[101:150,] = X[101:150,]-2

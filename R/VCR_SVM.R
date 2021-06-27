@@ -383,7 +383,6 @@ vcr.svm.newdata = function(Xnew, ynew=NULL, vcr.svm.train.out){
               altint = altint,
               altlab = levels[altint],
               PAC = PAC,
-              figparams = vcr.svm.train.out$figparams,
               fig = farout$fig,
               farness = farout$farness,
               ofarness = farout$ofarness))

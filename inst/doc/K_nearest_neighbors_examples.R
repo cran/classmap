@@ -52,7 +52,7 @@ summary(vcr.train$farness)
 summary(vcr.train$ofarness)
 
 ## -----------------------------------------------------------------------------
-confmat.vcr(vcr.train, showOutliers = F)
+confmat.vcr(vcr.train, showOutliers = FALSE)
 
 ## -----------------------------------------------------------------------------
 confmat.vcr(vcr.train, cutoff = 0.98)

@@ -2,7 +2,7 @@
 \alias{vcr.knn.newdata}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Prepare classmap for k-nearest neighbors on new data
+Carry out a k-nearest neighbor classification on new data, and prepare to visualize its results.
 }
 \description{
 Predicts class labels for new data by k nearest neighbors, using the output of \code{\link{vcr.knn.train}} on the training data. For cases in the new data whose given label \code{ynew} is not \code{NA}, additional output is produced for constructing graphical displays such as the \code{\link{classmap}}.
@@ -29,7 +29,6 @@ A list with components: \cr
 \item{altint}{number of the alternative class. Among the classes different from the given class, it is the one with the highest posterior probability. Is \code{NA} for cases whose \code{ynew} is missing.}
 \item{altlab}{label of the alternative class. Is \code{NA} for cases whose \code{ynew} is missing.}
 \item{PAC}{probability of the alternative class. Is \code{NA} for cases whose \code{ynew} is missing.}
-\item{figparams}{(from training data) parameters used for \code{fig}.}
 \item{fig}{distance of each case \eqn{i} from each class \eqn{g}. Always exists.}
 \item{farness}{farness of each case from its given class. Is \code{NA} for cases whose \code{ynew} is missing.}
 \item{ofarness}{for each case \code{i}, its lowest  \code{fig[i,g]} to any class \code{g}. Always exists.}
@@ -40,8 +39,7 @@ A list with components: \cr
 }
 
 \references{
-Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing
-classification results. \emph{Technometrics}, forthcoming. \href{https://arxiv.org/abs/2007.14495}{(link to open access pdf)}
+Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing classification results. \emph{Technometrics}, appeared online. \doi{10.1080/00401706.2021.1927849}{(link to open access pdf)}
 }
 
 \author{
@@ -49,7 +47,7 @@ classification results. \emph{Technometrics}, forthcoming. \href{https://arxiv.o
 }
 
 \seealso{
-\code{\link{vcr.knn.train}}, \code{\link{classmap}}
+\code{\link{vcr.knn.train}}, \code{\link{classmap}}, \code{\link{silplot}}, \code{\link{stackedplot}}
 }
 
 \examples{

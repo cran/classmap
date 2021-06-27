@@ -22,7 +22,7 @@ stackedplot(vcrout, cutoff = 0.99, classCols = NULL, classLabels = NULL,
  \item{separSize}{how much white between rectangles.}
  \item{minSize}{rectangles describing less than \code{minSize} percent of the data, are shown as \code{minSize} percent.}
  \item{showOutliers}{if \code{TRUE}, shows a separate class in gray with the outliers, always at the top.}
- \item{showLegend}{if \code{TRUE}, legend is shown to the right of the plot. Default \code{FALSE}, since the legend is not necessary as the colors are already visible in the bottom part of each stack.}
+ \item{showLegend}{if \code{TRUE}, a legend is shown to the right of the plot. Default \code{FALSE}, since the legend is not necessary as the colors are already visible in the bottom part of each stack.}
  \item{htitle}{title for horizontal axis (given labels). If  \code{NULL}, a default title is shown.}
  \item{vtitle}{title for vertical axis (predicted labels). If  \code{NULL}, a default title is shown.}
 }
@@ -32,8 +32,7 @@ A ggplot object.
 }
 
 \references{
-Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing
-classification results. \emph{Technometrics}, forthcoming. \href{https://arxiv.org/abs/2007.14495}{(link to open access pdf)}
+Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing classification results. \emph{Technometrics}, appeared online. \doi{10.1080/00401706.2021.1927849}{(link to open access pdf)}
 }
 
 \author{
@@ -41,8 +40,7 @@ classification results. \emph{Technometrics}, forthcoming. \href{https://arxiv.o
 }
 
 \seealso{
-\code{\link{vcr.da.train}}, \code{\link{vcr.da.newdata}}, \code{\link{vcr.knn.train}}, \code{\link{vcr.knn.newdata}}, \code{\link{vcr.svm.train}}, \cr
-\code{\link{vcr.svm.newdata}}
+\code{\link{vcr.da.train}}, \code{\link{vcr.da.newdata}},\cr \code{\link{vcr.knn.train}}, \code{\link{vcr.knn.newdata}},\cr \code{\link{vcr.svm.train}}, \code{\link{vcr.svm.newdata}},\cr \code{\link{vcr.rpart.train}}, \code{\link{vcr.rpart.newdata}},\cr \code{\link{vcr.forest.train}}, \code{\link{vcr.forest.newdata}},\cr \code{\link{vcr.neural.train}}, \code{\link{vcr.neural.newdata}}
 }
 
 \examples{
@@ -64,5 +62,8 @@ stackedplot(vcrout, classCols = cols, showOutliers=FALSE)
 vignette("Discriminant_analysis_examples")
 vignette("K_nearest_neighbors_examples")
 vignette("Support_vector_machine_examples")
+vignette("Rpart_examples")
+vignette("Random_forest_examples")
+vignette("Neural_net_examples")
 }
 

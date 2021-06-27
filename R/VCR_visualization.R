@@ -28,10 +28,10 @@ confmat.vcr = function(vcrout, cutoff = 0.99,
     if(is.null(vcrout$yint)) {
       stop("there is no vcrout$yint or vcrout$yintnew") }
     given = vcrout$yint
-    training = T
+    training = TRUE
   } else {
     given = vcrout$yintnew
-    training = F
+    training = FALSE
   }
   whichyint = if(training) {"yint"} else {"yintnew"}
   indsv = which(!is.na(given))
@@ -70,7 +70,7 @@ confmat.vcr = function(vcrout, cutoff = 0.99,
     rownames(confMat) = myrownames
     colnames(confMat) = mycolnames
   }
-  if(silent != T){
+  if(silent != TRUE){
     wnq(paste0("\nConfusion matrix:"))
     pnq(confMat)
     wnq(paste0("\nThe accuracy is ",round(100*accuracy,2),"%."))
@@ -145,7 +145,7 @@ stackedplot = function(vcrout, cutoff = 0.99, classCols = NULL,
   }
   confusi  = confmat.vcr(vcrout, cutoff = cutoff,
                          showOutliers = showOutliers,
-                         showClassNumbers = T, silent = T)
+                         showClassNumbers = TRUE, silent = TRUE)
   pconfusi = confusi/rowSums(confusi) * 100
   # = confusion matrix in percentages
   ayint = as.numeric(rownames(confusi)) # available yint
@@ -323,10 +323,10 @@ classmap = function(vcrout, whichclass, classLabels = NULL,
   if(is.null(vcrout$yintnew)){
     if(is.null(vcrout$yint)) stop("vcrout$yint is missing")
     yint = vcrout$yint
-    training = T
+    training = TRUE
   } else {
     yint = vcrout$yintnew
-    training = F
+    training = FALSE
   }
   whichdata = if(training) {"[training]"} else {"[newdata]"}
   whichyint = if(training) {"yint"} else {"yintnew"}
@@ -394,7 +394,7 @@ classmap = function(vcrout, whichclass, classLabels = NULL,
   #
   # Make actual plot
   #
-  if(squareplot == T) par(pty="s")
+  if(squareplot == TRUE) par(pty="s")
   # makes the axes of the plot equally long
   farlim = c(0,maxfar*maxfactor)
   plot(0, 0, type= "n", ann = FALSE, axes = FALSE,
@@ -420,7 +420,7 @@ classmap = function(vcrout, whichclass, classLabels = NULL,
   attr(coordinates, "ids") = integer(0)
   if(identify) {
     message("Press the escape key to stop identifying.")
-    iout = identify(coordinates, order = T)
+    iout = identify(coordinates, order = TRUE)
     ids = iout$ind[order(iout$order)]
     if(length(ids) > 0) {
       wnq("Identified point(s): ")
@@ -430,3 +430,170 @@ classmap = function(vcrout, whichclass, classLabels = NULL,
   }
   invisible(coordinates)
 }
+
+
+
+silplot = function(vcrout, classLabels = NULL, classCols = NULL,
+                   showLegend = TRUE, showClassNumbers = FALSE,
+                   showCases = FALSE, drawLineAtAverage = FALSE,
+                   topdown = TRUE, main = NULL, summary = TRUE){
+  #
+  # Draws probability-based silhouette plot of a classification.
+  #
+  # Arguments:
+  # vcrout            : output of vcr.*.*
+  # classCols         : user-specified colors for the classes.
+  #                     If NULL a default palette is used.
+  # classLabels       : names of given labels. If NULL they are the
+  #                     levels taken from vcrout.
+  #                     This option can be useful if we want to show
+  #                     shorter labels in the plot.
+  # showLegend        : if T, legend is shown to the right of the plot.
+  # showClassNumbers  : if T, the legend will show the class numbers
+  #                     instead of the class labels.
+  # showcases         : if T, the plot shows the numbers of the cases.
+  #                     They are only readable when the number of cases
+  #                     is relatively small.
+  # topdown           : if TRUE (the default), the silhouettes are
+  #                     plotted from top to bottom. Otherwise they
+  #                     are plotted from left to right.
+  # drawLineAtAverage : if TRUE, drwas a line at the average value
+  #                     of the s(i).
+  # main              : title for the plot
+  # summary           : if TRUE, puts a ummary table on the screen
+  #                     with for each class its number, label, size,
+  #                     and the average of its s(i).
+  #
+  # Returns:
+  # gg                : the plot object.
+  #
+  nlab = length(vcrout$levels)
+  if(is.null(classLabels)) { # no classLabels are given
+    lvls = vcrout$levels
+  } else { # classLabels are given
+    if(!is.vector(classLabels)){
+      stop("\n classLabels should be a vector") }
+    lvls = classLabels
+    if(length(lvls) != nlab) {
+      stop(paste0("\n The number of classLabels should equal",
+                  " length(vcrout$levels) = ",nlab,".")) }
+  }
+  if(is.null(classCols)) {
+    classCols = rainbow(nlab)
+  } else {
+    if(!is.vector(classCols)){
+      stop("\n classCols should be a vector") }
+    if(length(classCols) < nlab){
+      stop(paste0("\n The number of classCols should be at",
+                  " least length(vcrout$levels) = ",nlab,".")) }
+    classCols = classCols[seq_len(nlab)]
+  }
+  if(is.null(vcrout$yintnew)){
+    if(is.null(vcrout$yint)) {
+      stop("there is no vcrout$yint or vcrout$yintnew") }
+    yintv = vcrout$yint
+    training = TRUE
+  } else {
+    yintv = vcrout$yintnew
+    training = FALSE
+  }
+  whichdata = if(training) {"[training]"} else {"[newdata]"}
+  whichyint = if(training) {"yint"} else {"yintnew"}
+  indsv = which(!is.na(yintv))
+  if(length(indsv) == 0){
+    stop(paste0(whichyint," has no available values,",
+                " so no silhouette plot can be made.")) }
+  if(length(indsv) < 2){
+    stop(paste0("At least 2 cases with non-missing ",whichyint,
+                " are required.")) }
+  yintv = yintv[indsv]
+  ayint = sort(unique(yintv))
+  if(sum(!(yintv %in% seq_len(nlab))) > 0) {
+    stop(paste0("Not all ",whichyint,"[indsv] lie in 1:",nlab)) }
+  PAC = vcrout$PAC[indsv]
+  if(sum(is.na(PAC)) > 0) stop("PAC[indsv] has missing values.")
+  si = 1 - 2*PAC # = s(i) based on PAC
+  if(is.null(main)) {
+    main = paste0(whichdata, " Silhouette plot of classification") }
+  df = as.data.frame(cbind(class=yintv, si, name=indsv))
+  # head(df)
+  if(topdown) { df = df[order(-df$class, df$si), ]
+  } else { df = df[order(df$class, -df$si), ] }
+  # sorts first by class number, then by si
+  avswidth = mean(df$si) # overall average silhouette width
+  df$name  = factor(df$name, levels = df$name)
+  # df$class = as.factor(lvls[df$class])
+  df$class = as.factor(df$class)
+  # makes class a factor
+  if(showClassNumbers){
+    mapping = aes_string(x = "name", y = "si",
+                         color = "class", fill = "class")
+  } else {
+    df$label = factor(lvls[df$class], levels=lvls[seq_len(nlab)])
+    mapping  = aes_string(x = "name", y = "si",
+                          color = "label", fill = "label")
+  }
+  gg = ggplot(df, mapping) +
+    geom_bar(stat = "identity", show.legend = showLegend,
+             size = 0.05, width = 0.75) +
+    labs(y = paste0("Silhouette width s(i)"),
+         caption = paste0("\nOverall average silhouette width: ",
+                          round(avswidth,2)), x = "",
+         title = paste0(main))
+  gg = gg + scale_fill_manual(values = classCols[ayint],
+                              aesthetics = c("colour", "fill"))
+  if(topdown) gg = gg + coord_flip()
+  # switches the horizontal and vertical axes
+  if(drawLineAtAverage){
+    gg = gg + geom_hline(yintercept = avswidth,
+                         linetype = "dashed", color = "red")
+  }
+  if(!showCases){
+    if(topdown){
+      gg = gg + theme(axis.text.y = element_blank(),
+                      axis.ticks.y = element_blank())
+    } else {
+      gg = gg + theme(axis.text.x = element_blank(),
+                      axis.ticks.x = element_blank()) }
+  } else {
+    if(topdown){
+      gg = gg + theme(axis.text.y = element_text(angle = 0))
+    } else {
+      gg = gg + theme(axis.text.x = element_text(angle = 90)) }
+  }
+  gg = gg + theme(plot.title = element_text(hjust = 0.5)) # center title
+  gg = gg + theme(axis.line.x = element_line(size = 0.25))
+  gg = gg + scale_x_discrete(expand=c(0,0.013*length(indsv)))
+  gg = gg + scale_y_continuous(expand=c(0,0), limits = c(-1, 1))
+  gg = gg +  theme(panel.background = element_blank())
+  silwidths_perclass = round(sapply(unique(df$class), function(y) mean(df$si[which(df$class == y)])), 2)
+
+  if (topdown) {
+    xlocs <- cumsum(c(0, rev(table(df$class)[-1]))) + rev(table(df$class))*5/6
+  } else {
+    xlocs <- rev(cumsum(c(0, rev(table(df$class)[-1]))) + rev(table(df$class))*1/2) # 2/6)
+  }
+  for (i in 1:length(silwidths_perclass)) {
+    templabel = paste('paste(bar(s), " = ",', silwidths_perclass[i], ")")
+    gg = gg + annotate("text", y = -0.5, x = xlocs[i],
+                       label = templabel, parse = TRUE,
+                       color = rev(classCols[ayint])[i])
+  }
+  gg = gg + theme(plot.title.position = "plot") # center title over whole figure
+  gg = gg + theme(axis.title=element_text(size=10))
+  gg = gg + theme(plot.caption = element_text(size=10,
+                                              hjust = 0,
+                                              margin=ggplot2::margin(0,0,0,0)))
+  if(summary){
+    ave = tapply(df$si, df$class, mean) # average s(i) by class
+    n = tapply(df$class, df$class, length) # cardinality of each class
+    sil.sum = data.frame(classNumber = names(ave),
+                         classLabel = lvls[as.numeric(names(ave))],
+                         classSize = n,
+                         classAveSi = round(ave, 2),
+                         stringsAsFactors = TRUE)
+    print(sil.sum, row.names=FALSE)
+  }
+  return(gg)
+}
+

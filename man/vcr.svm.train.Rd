@@ -2,7 +2,7 @@
 \alias{vcr.svm.train}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Prepare classmap for a support vector machine classification.
+Prepare for visualization of a support vector machine classification on training data.
 }
 \description{
 Produces output for the purpose of constructing graphical displays such as the \code{\link{classmap}}. The user first needs to run a support vector machine classification on the data by \code{\link[e1071:svm]{e1071::svm}}, with the option \code{probability = TRUE}. This classification can be with two or more classes. The output of \code{\link[e1071:svm]{e1071::svm}} is then an argument to \code{\link{vcr.svm.train}}. As \code{\link[e1071:svm]{e1071::svm}} does not output the data itself, it needs to be given as well, in the arguments \code{X} and \code{y}.
@@ -38,8 +38,7 @@ A list with components: \cr
 }
 
 \references{
-Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing
-classification results. \emph{Technometrics}, forthcoming. \href{https://arxiv.org/abs/2007.14495}{(link to open access pdf)}
+Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing classification results. \emph{Technometrics}, appeared online. \doi{10.1080/00401706.2021.1927849}{(link to open access pdf)}
 }
 
 \author{
@@ -47,7 +46,7 @@ classification results. \emph{Technometrics}, forthcoming. \href{https://arxiv.o
 }
 
 \seealso{
-\code{\link{vcr.knn.newdata}}, \code{\link{classmap}}, \code{\link[e1071:svm]{e1071::svm}}
+\code{\link{vcr.knn.newdata}}, \code{\link{classmap}}, \code{\link{silplot}}, \code{\link{stackedplot}}, \code{\link[e1071:svm]{e1071::svm}}
 }
 
 \examples{

@@ -114,7 +114,7 @@ Using confmat.vcr(), we can construct the usual confusion matrix and obtain the
 accuracy of the classification:
 
 ```{r}
-confmat.vcr(vcr.train, showOutliers = F)
+confmat.vcr(vcr.train, showOutliers = FALSE)
 ```
 
 By using showOutliers = TRUE and setting a cutoff, objects with ofarness > cutoff

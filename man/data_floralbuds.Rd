@@ -39,4 +39,3 @@ summary(data_floralbuds)
 # The data are used in:
 vignette("Discriminant_analysis_examples")
 }
-\keyword{datasets}

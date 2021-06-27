@@ -2,7 +2,7 @@
 \alias{vcr.svm.newdata}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Support vector machine classification of new data.
+Prepare for visualization of a support vector machine classification on new data.
 }
 \description{
 Carries out a support vector machine classification of new data using the output of \code{\link{vcr.svm.train}} on the training data, and computes the quantities needed for its visualization.
@@ -29,15 +29,13 @@ A list with components: \cr
 \item{altint}{number of the alternative class. Among the classes different from the given class, it is the one with the highest posterior probability. Is \code{NA} for cases whose \code{ynew} is missing.}
 \item{altlab}{alternative label if yintnew was given, else \code{NA}.}
 \item{PAC}{probability of the alternative class. Is \code{NA} for cases whose \code{ynew} is missing.}
-\item{figparams}{(from training data) parameters used for \code{fig}.}
 \item{fig}{distance of each case \eqn{i} from each class \eqn{g}. Always exists.}
 \item{farness}{farness of each case from its given class. Is \code{NA} for cases whose \code{ynew} is missing.}
 \item{ofarness}{for each case \eqn{i}, its lowest \code{fig[i,g]} to any class \eqn{g}. Always exists.}
 }
 
 \references{
-Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing
-classification results. \emph{Technometrics}, forthcoming. \href{https://arxiv.org/abs/2007.14495}{(link to open access pdf)}
+Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing classification results. \emph{Technometrics}, appeared online. \doi{10.1080/00401706.2021.1927849}{(link to open access pdf)}
 }
 
 \author{
@@ -45,7 +43,7 @@ classification results. \emph{Technometrics}, forthcoming. \href{https://arxiv.o
 }
 
 \seealso{
-\code{\link{vcr.svm.train}}, \code{\link{classmap}}, \code{\link[e1071:svm]{e1071::svm}}
+\code{\link{vcr.svm.train}}, \code{\link{classmap}}, \code{\link{silplot}}, \code{\link{stackedplot}}, \code{\link[e1071:svm]{e1071::svm}}
 }
 
 \examples{

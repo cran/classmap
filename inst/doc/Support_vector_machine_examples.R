@@ -225,7 +225,7 @@ plot(svmfit$decision.values)
 vcr.train = vcr.svm.train(Xf, y, svfit=svmfit)
 
 ## -----------------------------------------------------------------------------
-confmat.vcr(vcr.train, showOutliers = F)
+confmat.vcr(vcr.train, showOutliers = FALSE)
 
 ## -----------------------------------------------------------------------------
 ptm = proc.time()

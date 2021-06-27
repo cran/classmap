@@ -463,7 +463,7 @@ accuracy is 100%.
 This classification is perfect due to overfitting!
 
 ```{r}
-confmat.vcr(vcr.train, showOutliers = F)
+confmat.vcr(vcr.train, showOutliers = FALSE)
 ```
 
 The classification on the test data is more interesting.

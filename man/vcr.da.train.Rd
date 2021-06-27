@@ -2,7 +2,7 @@
 \alias{vcr.da.train}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Prepare classmap for discriminant analysis
+Carry out discriminant analysis on training data, and prepare to visualize its results.
 }
 \description{
 Custom DA function which prepares for graphical displays such as the \code{\link{classmap}}. The disciminant analysis itself is carried out by the maximum a posteriori rule, which maximizes the density of the mixture.
@@ -43,8 +43,7 @@ A list with components: \cr
   \item{lAlt}{log of mixture density of each case in its alternative class. Is \code{NA} for cases with missing \code{y}.}
 }
 \references{
-Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing
-classification results. \emph{Technometrics}, forthcoming. \href{https://arxiv.org/abs/2007.14495}{(link to open access pdf)}
+Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing classification results. \emph{Technometrics}, appeared online. \doi{10.1080/00401706.2021.1927849}{(link to open access pdf)}
 }
 
 \author{
@@ -52,7 +51,7 @@ classification results. \emph{Technometrics}, forthcoming. \href{https://arxiv.o
 }
 
 \seealso{
-\code{\link{vcr.da.newdata}}, \code{\link{classmap}}
+\code{\link{vcr.da.newdata}}, \code{\link{classmap}}, \code{\link{silplot}}, \code{\link{stackedplot}}
 }
 
 \examples{

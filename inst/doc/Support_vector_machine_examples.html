@@ -208,7 +208,18 @@ from a support vector machine, as well as some of the other tools in the class m
 package.</p>
 
 <pre><code class="r">library(&quot;e1071&quot;)
-library(&quot;classmap&quot;)
+</code></pre>
+
+<pre><code>## 
+## Attaching package: &#39;e1071&#39;
+</code></pre>
+
+<pre><code>## The following object is masked _by_ &#39;.GlobalEnv&#39;:
+## 
+##     sigmoid
+</code></pre>
+
+<pre><code class="r">library(&quot;classmap&quot;)
 </code></pre>
 
 <h1>Small toy example</h1>
@@ -944,7 +955,7 @@ Kr_train = kernlab::kernelMatrix(kernel=strdot, x=X)
 </code></pre>
 
 <pre><code>## elapsed 
-##   21.36
+##   21.74
 </code></pre>
 
 <pre><code class="r">dim(Kr_train) 
@@ -1035,7 +1046,7 @@ since the dimension is high.</p>
 accuracy is 100%.
 This classification is perfect due to overfitting!</p>
 
-<pre><code class="r">confmat.vcr(vcr.train, showOutliers = F)
+<pre><code class="r">confmat.vcr(vcr.train, showOutliers = FALSE)
 </code></pre>
 
 <pre><code>## 
@@ -1058,7 +1069,7 @@ Kr_test = kernlab::kernelMatrix(kernel=strdot, x=Xnew, y=X)
 </code></pre>
 
 <pre><code>## elapsed 
-##    43.1
+##      45
 </code></pre>
 
 <p>Now we compute feature vectors of the test set. These features live

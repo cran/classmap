@@ -40,8 +40,9 @@ Executing the function plots the class map and returns
 }
 
 \references{
-Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing
-classification results. \emph{Technometrics}, forthcoming. \href{https://arxiv.org/abs/2007.14495}{(link to open access pdf)}
+Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing classification results. \emph{Technometrics}, appeared online. \doi{10.1080/00401706.2021.1927849}{(link to open access pdf)}
+
+Raymaekers J., Rousseeuw P.J.(2021). Silhouettes and quasi residual plots for neural nets and tree-based classifiers. \href{https://arxiv.org/abs/2106.08814}{(link to open access pdf)}
 }
 
 \author{
@@ -49,8 +50,7 @@ classification results. \emph{Technometrics}, forthcoming. \href{https://arxiv.o
 }
 
 \seealso{
-\code{\link{vcr.da.train}}, \code{\link{vcr.da.newdata}}, \code{\link{vcr.knn.train}}, \code{\link{vcr.knn.newdata}}, \code{\link{vcr.svm.train}}, \cr
-\code{\link{vcr.svm.newdata}}
+\code{\link{vcr.da.train}}, \code{\link{vcr.da.newdata}},\cr \code{\link{vcr.knn.train}}, \code{\link{vcr.knn.newdata}},\cr \code{\link{vcr.svm.train}}, \code{\link{vcr.svm.newdata}},\cr \code{\link{vcr.rpart.train}}, \code{\link{vcr.rpart.newdata}},\cr \code{\link{vcr.forest.train}}, \code{\link{vcr.forest.newdata}},\cr \code{\link{vcr.neural.train}}, \code{\link{vcr.neural.newdata}}
 }
 
 \examples{
@@ -65,5 +65,8 @@ classmap(vcrout, "virginica", classCols = 2:4)
 vignette("Discriminant_analysis_examples")
 vignette("K_nearest_neighbors_examples")
 vignette("Support_vector_machine_examples")
+vignette("Rpart_examples")
+vignette("Random_forest_examples")
+vignette("Neural_net_examples")
 }
 

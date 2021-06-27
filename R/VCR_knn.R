@@ -517,7 +517,6 @@ vcr.knn.newdata = function(Xnew, ynew=NULL, vcr.knn.train.out, LOO=FALSE){
               altint = altint,
               altlab = levels[altint],
               PAC = PAC,
-              figparams = vcr.knn.train.out$figparams,
               fig = farout$fig,
               farness = farout$farness,
               ofarness = farout$ofarness,
