@@ -221,10 +221,15 @@ legend("topright", fill = cols, legend = labels,
 par(oldpar)
 
 ## -----------------------------------------------------------------------------
-mnistData = load(url("https://www.lancaster.ac.uk/staff/taylorb1/mnist.RData"))
-X_train = matrix(unlist(train_set), nrow = 60000, byrow = TRUE)
-y_train = as.factor(unlist(lapply(truth, which.max)) - 1)
-dim(X_train) = c(60000, 28, 28); X_train = aperm(X_train, c(1, 3, 2))
+
+mnist_url <- "https://wis.kuleuven.be/statdatascience/robust/data/mnist-rdata"
+url.exists <- suppressWarnings(try(open.connection(url(mnist_url),open="rt",timeout=2),silent=T)[1], classes = "warning");close(url(mnist_url))
+
+if(is.null(url.exists)){load(url(mnist_url))} else {
+  print(paste("The data source ", mnist_url, "is not active at the moment. The example can nevertheless be reproduced by downloading the mnist data from another source, formatting the training data to dimensions 60000 x 28 x 28, and running the code below."))
+}
+X_train = mnist$train$x
+y_train = as.factor(mnist$train$y)
 
 head(y_train)
 # Levels: 0 1 2 3 4 5 6 7 8 9
@@ -233,7 +238,7 @@ length(y_train) # 60000
 
 ## ----fig.height=1,fig.width=1-------------------------------------------------
 plotImage = function(tempImage) {
-  tdm = reshape2::melt(tempImage)
+  tdm = reshape2::melt(apply(tempImage, 2 , rev))
   p = ggplot(tdm,aes(x = Var2,y = Var1,fill = (value))) +
     geom_raster() +
     guides(color = FALSE,size = FALSE,fill = FALSE) +
@@ -453,9 +458,8 @@ discussionPlot = grid.arrange(grobs = discussionPlots,
 #                    (length(indstomark) %% 5 > 0)))
 
 ## ----fig.height=1,fig.width=1-------------------------------------------------
-X_test = matrix(unlist(test_set), nrow = 10000, byrow = TRUE)
-y_test = as.factor(unlist(lapply(test_truth, which.max)) - 1) 
-dim(X_test) = c(10000, 28, 28); X_test = aperm(X_test, c(1, 3, 2))
+X_test = mnist$test$x
+y_test = as.factor(mnist$test$y)
 
 head(y_test)
 #

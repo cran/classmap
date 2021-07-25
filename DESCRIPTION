@@ -1,8 +1,8 @@
 Package: classmap
 Type: Package
 Title: Visualizing Classification Results
-Date: 2021-06-26
-Version: 1.1.0
+Date: 2021-07-24
+Version: 1.1.1
 Authors@R: c(
             person(given="Jakob",family="Raymaekers", role = c("aut","cre"),
             email="jakob.raymaekers@kuleuven.be"),
@@ -32,6 +32,6 @@ LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 7.1.1
 NeedsCompilation: no
-Packaged: 2021-06-27 11:22:34 UTC; u0105404
+Packaged: 2021-07-24 12:55:50 UTC; u0105404
 Repository: CRAN
-Date/Publication: 2021-06-27 14:50:05 UTC
+Date/Publication: 2021-07-25 13:40:05 UTC

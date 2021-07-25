@@ -870,10 +870,14 @@ As the link on his website is currently down, we use a different source.
 Note that downloading the data may take a minute or two, depending
 on the speed of the internet connection.</p>
 
-<pre><code class="r">mnistData = load(url(&quot;https://www.lancaster.ac.uk/staff/taylorb1/mnist.RData&quot;))
-X_train = matrix(unlist(train_set), nrow = 60000, byrow = TRUE)
-y_train = as.factor(unlist(lapply(truth, which.max)) - 1)
-dim(X_train) = c(60000, 28, 28); X_train = aperm(X_train, c(1, 3, 2))
+<pre><code class="r">mnist_url &lt;- &quot;https://wis.kuleuven.be/statdatascience/robust/data/mnist-rdata&quot;
+url.exists &lt;- suppressWarnings(try(open.connection(url(mnist_url),open=&quot;rt&quot;,timeout=2),silent=T)[1], classes = &quot;warning&quot;);close(url(mnist_url))
+
+if(is.null(url.exists)){load(url(mnist_url))} else {
+  print(paste(&quot;The data source &quot;, mnist_url, &quot;is not active at the moment. The example can nevertheless be reproduced by downloading the mnist data from another source, formatting the training data to dimensions 60000 x 28 x 28, and running the code below.&quot;))
+}
+X_train = mnist$train$x
+y_train = as.factor(mnist$train$y)
 
 head(y_train)
 </code></pre>
@@ -898,7 +902,7 @@ dim(X_train) # 60000    28    28
 <p>We now inspect the data by plotting a few images</p>
 
 <pre><code class="r">plotImage = function(tempImage) {
-  tdm = reshape2::melt(tempImage)
+  tdm = reshape2::melt(apply(tempImage, 2 , rev))
   p = ggplot(tdm,aes(x = Var2,y = Var1,fill = (value))) +
     geom_raster() +
     guides(color = FALSE,size = FALSE,fill = FALSE) +
@@ -979,7 +983,7 @@ svd.out = svd::propack.svd(X_train,neig=50)
 </code></pre>
 
 <pre><code>## elapsed 
-##    24.3
+##    21.5
 </code></pre>
 
 <pre><code class="r">loadings = svd.out$v
@@ -1240,9 +1244,8 @@ discussionPlot = grid.arrange(grobs = discussionPlots,
 First load and inspect the data, and project it onto the PCA subspace extracted
 from the training data.</p>
 
-<pre><code class="r">X_test = matrix(unlist(test_set), nrow = 10000, byrow = TRUE)
-y_test = as.factor(unlist(lapply(test_truth, which.max)) - 1) 
-dim(X_test) = c(10000, 28, 28); X_test = aperm(X_test, c(1, 3, 2))
+<pre><code class="r">X_test = mnist$test$x
+y_test = as.factor(mnist$test$y)
 
 head(y_test)
 </code></pre>
