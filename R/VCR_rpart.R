@@ -1,5 +1,5 @@
-vcr.rpart.train = function(X, y, trainfit, type = list(),
-                           k = 5, stand = TRUE){
+vcr.rpart.train <- function(X, y, trainfit, type = list(),
+                            k = 5, stand = TRUE) {
   #
   # Constructs vcr output from an rpart object.
   #
@@ -35,7 +35,7 @@ vcr.rpart.train = function(X, y, trainfit, type = list(),
 
   # Auxiliary function:
   #
-  importanceWeights = function(varimp, cnames) {
+  importanceWeights <- function(varimp, cnames) {
     # Takes variable importance from the package rpart or the
     # package randomForest.
     # In varimp the variables are listed from highest to lowest
@@ -44,111 +44,111 @@ vcr.rpart.train = function(X, y, trainfit, type = list(),
     # names of the training data.
     # Variables not occurring in varimp are assigned weight zero.
     #
-    varimp = pmax(varimp, 0)
-    varimp = drop(varimp / sum(varimp))
-    namesimp = names(varimp)
-    nonzeroVars = which(cnames %in% namesimp)
-    varweights = rep(0,length(cnames))
-    for(j in nonzeroVars){ # j=2
-      varnamej = cnames[j]
-      wgt = varimp[which(namesimp == varnamej)]
-      varweights[j] = wgt
+    varimp <- pmax(varimp, 0)
+    varimp <- drop(varimp / sum(varimp))
+    namesimp <- names(varimp)
+    nonzeroVars <- which(cnames %in% namesimp)
+    varweights <- rep(0, length(cnames))
+    for (j in nonzeroVars) { # j=2
+      varnamej <- cnames[j]
+      wgt <- varimp[which(namesimp == varnamej)]
+      varweights[j] <- wgt
     }
     return(varweights)
   }
 
   # Here the main code starts
-  if(nrow(X) == 1) X=t(X)
-  if(length(dim(X)) != 2 ||
-     !(is.data.frame(X) || is.numeric(X)))
+  if (nrow(X) == 1) X <- t(X)
+  if (length(dim(X)) != 2 ||
+      !(is.data.frame(X) || is.numeric(X)))
     stop("x is not a dataframe or a numeric matrix.")
-  n = nrow(X)
-  if(n < 2) stop("The training data should have more than one case.")
+  n <- nrow(X)
+  if (n < 2) stop("The training data should have more than one case.")
   # Check whether y and its levels are of the right form:
-  checked = checkLabels(y, n, training=TRUE)
+  checked <- checkLabels(y, n, training = TRUE)
   #                      stop.training.if.a.response.is.NA = F)
   # If it did not stop: yint has length n, and its values are in
-  # 1,...,nlab without gaps. It is NA where y is: outside indsv.
+  # 1, ..., nlab without gaps. It is NA where y is: outside indsv.
   #
-  lab2int = checked$lab2int # is a function
-  levels  = checked$levels
-  nlab    = length(levels)
-  yint    = lab2int(y)
-  indsv   = checked$indsv # cases in indsv can be visualized
-  nvis    = length(indsv)
-  yintv   = yint[indsv]
+  lab2int <- checked$lab2int # is a function
+  levels  <- checked$levels
+  nlab    <- length(levels)
+  yint    <- lab2int(y)
+  indsv   <- checked$indsv # cases in indsv can be visualized
+  nvis    <- length(indsv)
+  yintv   <- yint[indsv]
   #
   # As in vcr.svm.train, treating X as "new data" allows us to
   # obtain predictions also for cases whose y was NA:
-  preds = predict(object=trainfit, type="class",
-                                newdata = as.data.frame(X))
-  predint = lab2int(preds)
+  preds <- predict(object = trainfit, type = "class",
+                   newdata = as.data.frame(X))
+  predint <- lab2int(preds)
   #
   # From here on we only use the cases with available y
   #
-  probs = predict(object=trainfit, type="prob",
-                                newdata = as.data.frame(X))[indsv,]
-  probs = probs[,order(lab2int(colnames(probs)))]
+  probs <- predict(object = trainfit, type = "prob",
+                   newdata = as.data.frame(X))[indsv, ]
+  probs <- probs[, order(lab2int(colnames(probs)))]
   # rowSums(probs) # all 1
-  PAC = altint = rep(NA, n)
+  PAC <- altint <- rep(NA, n)
   # We can only compute PAC and altint where yint is not NA:
-  altintv = PACv = rep(NA, nvis)
-  for(i in seq_len(nvis)){
-    ptrue      = probs[i,yintv[i]]
-    others     = (seq_len(nlab))[-yintv[i]]
-    palt       = max(probs[i,others])
-    altintv[i] = others[which.max(probs[i,others])]
-    PACv[i]    = palt/(ptrue + palt)
+  altintv <- PACv <- rep(NA, nvis)
+  for (i in seq_len(nvis)) {
+    ptrue      <- probs[i, yintv[i]]
+    others     <- (seq_len(nlab))[-yintv[i]]
+    palt       <- max(probs[i, others])
+    altintv[i] <- others[which.max(probs[i, others])]
+    PACv[i]    <- palt / (ptrue + palt)
   }
   #
-  PAC[indsv]    = PACv    # the other entries of PAC stay NA
-  altint[indsv] = altintv # the other entries of altint stay NA
-  if(nlab==2) altint = 3-yint # for consistency with svm etc.
-  if (is.null(k))  { k = 5 }
+  PAC[indsv]    <- PACv    # the other entries of PAC stay NA
+  altint[indsv] <- altintv # the other entries of altint stay NA
+  if (nlab == 2) altint <- 3 - yint # for consistency with svm etc.
+  if (is.null(k)) {k <- 5}
   #
   # Compute farness based on knn
   #
   ### Construct initial daisy matrix
   #
-  varweights = importanceWeights(trainfit$variable.importance,
-                                 colnames(X))
-  X = X[indsv,]
-  daisy.out = daisy_vcr(X, type = type, weights = varweights,
-                        stand = stand)
+  varweights <- importanceWeights(trainfit$variable.importance,
+                                  colnames(X))
+  X <- X[indsv, ]
+  daisy.out <- daisy_vcr(X, type = type, weights = varweights,
+                         stand = stand)
   # daisy_vcr skips the variables with zero weight.
-  dismat  = as.matrix(daisy.out$disv)
-  meandis = mean(as.vector(dismat),na.rm=TRUE)
-  dismat[which(is.na(dismat))] = meandis
+  dismat  <- as.matrix(daisy.out$disv)
+  meandis <- mean(as.vector(dismat), na.rm = TRUE)
+  dismat[which(is.na(dismat))] <- meandis
   #
   # Compute neighbors by sorting dissimilarities:
-  sortNgb = t(apply(dismat,1,order))[,-1]
-  sortDis = t(apply(dismat,1,sort))[,-1]
+  sortNgb <- t(apply(dismat, 1, order))[, -1]
+  sortDis <- t(apply(dismat, 1, sort))[, -1]
   #
-  # Compute initial fig[i,g] from cases to classes:
+  # Compute initial fig[i, g] from cases to classes:
   #
-  fig = matrix(rep(NA,nvis*nlab),ncol=nlab)
-  for(i in seq_len(nvis)){ # loop over all cases in indsv
-    for (g in seq_len(nlab)){ # loop over classes
-      ngbg = which(yintv[sortNgb[i,]] == g)
-      if(length(ngbg) > k) { ngbg = ngbg[seq_len(k)] }
-      fig[i,g] = median(sortDis[i,ngbg])
+  fig <- matrix(rep(NA, nvis * nlab), ncol = nlab)
+  for (i in seq_len(nvis)) { # loop over all cases in indsv
+    for (g in seq_len(nlab)) { # loop over classes
+      ngbg <- which(yintv[sortNgb[i, ]] == g)
+      if (length(ngbg) > k) {ngbg <- ngbg[seq_len(k)]}
+      fig[i, g] <- median(sortDis[i, ngbg])
     }
   }
   #
   # Compute farness:
   #
-  farout = compFarness(type="knn", testdata = FALSE, yint = yintv,
-                                  nlab = nlab, X = NULL, fig = fig,
-                                  d = NULL, figparams = NULL)
-  fig = matrix(rep(0,n*nlab),ncol=nlab)
-  fig[indsv,] = farout$fig
-  farness = ofarness = rep(NA,n)
-  farness[indsv] = farout$farness
-  ofarness[indsv] = farout$ofarness
-  figparams = farout$figparams
-  figparams$daisy.out = daisy.out
-  figparams$meandis = meandis
-  figparams$k       = k
+  farout <- compFarness(type = "knn", testdata = FALSE, yint = yintv,
+                        nlab = nlab, X = NULL, fig = fig,
+                        d = NULL, figparams = NULL)
+  fig <- matrix(rep(0, n * nlab), ncol = nlab)
+  fig[indsv, ] <- farout$fig
+  farness <- ofarness <- rep(NA, n)
+  farness[indsv] <- farout$farness
+  ofarness[indsv] <- farout$ofarness
+  figparams <- farout$figparams
+  figparams$daisy.out <- daisy.out
+  figparams$meandis <- meandis
+  figparams$k       <- k
   #
   return(list(X         = X,
               yint      = yint,
@@ -167,8 +167,9 @@ vcr.rpart.train = function(X, y, trainfit, type = list(),
 }
 
 
-vcr.rpart.newdata = function(Xnew, ynew=NULL, vcr.rpart.train.out,
-                             LOO = FALSE) {
+vcr.rpart.newdata <- function(Xnew, ynew = NULL,
+                              vcr.rpart.train.out,
+                              LOO = FALSE) {
   #
   # Predicts class labels for new data by rpart, using the output
   # of vcr.svm.train() on the training data.
@@ -208,96 +209,94 @@ vcr.rpart.newdata = function(Xnew, ynew=NULL, vcr.rpart.train.out,
   #   ofarness  : For each object i, its lowest farness to any
   #               class (including its own). Always exists.
   #
-  X = vcr.rpart.train.out$X # training data with all variables
-  # d = ncol(X)
-  trainfit = vcr.rpart.train.out$trainfit
-  # namesInModel = names(trainfit$variable.importance)
-  # varsInModel  = which(colnames(X) %in% namesInModel)
-  varsInModel = attr(trainfit$terms,"term.labels")
+  X <- vcr.rpart.train.out$X # training data with all variables
+  # d <- ncol(X)
+  trainfit <- vcr.rpart.train.out$trainfit
+  varsInModel <- attr(trainfit$terms, "term.labels")
   checkXnew(Xtrain = X, Xnew = Xnew, allowNA = TRUE,
             varsInModel = varsInModel)
   # From here on we know that the variable names match, but
   # they might be in a different order. To correct for this:
-  namesmatch = match(colnames(X), colnames(Xnew))
-  Xnew = Xnew[, namesmatch]
+  namesmatch <- match(colnames(X), colnames(Xnew))
+  Xnew <- Xnew[, namesmatch]
   #
-  yint   = vcr.rpart.train.out$yint # class membership in training data
-  indold = which(!is.na(yint))
-  yint   = yint[indold]
-  ntrain = length(indold)
-  n      = nrow(Xnew) # number of new cases
-  levels = vcr.rpart.train.out$levels # same as in training data
-  nlab   = length(levels) # number of classes
+  yint   <- vcr.rpart.train.out$yint # class membership in training data
+  indold <- which(!is.na(yint))
+  yint   <- yint[indold]
+  ntrain <- length(indold)
+  n      <- nrow(Xnew) # number of new cases
+  levels <- vcr.rpart.train.out$levels # same as in training data
+  nlab   <- length(levels) # number of classes
   #
-  if(is.null(ynew)) ynew = factor(rep(NA,n), levels=levels)
-  checked = checkLabels(ynew, n, training = FALSE, levels)
-  lab2int = checked$lab2int # is a function
-  indsv   = checked$indsv   # INDiceS of cases we can Visualize,
+  if (is.null(ynew)) ynew <- factor(rep(NA, n), levels = levels)
+  checked <- checkLabels(ynew, n, training = FALSE, levels)
+  lab2int <- checked$lab2int # is a function
+  indsv   <- checked$indsv   # INDiceS of cases we can Visualize,
   #                         # can even be empty, is OK.
-  nvis    = length(indsv)   # can be zero.
-  yintnew = rep(NA,n)       # needed to overwrite "new" levels:
-  yintnew[indsv] = lab2int(ynew[indsv])
+  nvis    <- length(indsv)   # can be zero.
+  yintnew <- rep(NA, n)       # needed to overwrite "new" levels:
+  yintnew[indsv] <- lab2int(ynew[indsv])
   # Any "new" levels are now set to NA.
-  yintv   = yintnew[indsv]  # entries of yintnew that can be visualized
+  yintv   <- yintnew[indsv]  # entries of yintnew that can be visualized
   # From here on yintnew has length n, with values in seq_len(nlab).
   #
-  newdata = as.data.frame(Xnew)
-  preds = predict(trainfit, newdata, type="class")
-  predint = lab2int(preds)
+  newdata <- as.data.frame(Xnew)
+  preds <- predict(trainfit, newdata, type = "class")
+  predint <- lab2int(preds)
   #
   # From here on we only use the cases with available y
   #
-  PAC = altint = rep(NA, n)
-  probs = predict(object=trainfit, newdata,
-                                type="prob")[indsv,]
-  probs = probs[,order(lab2int(colnames(probs)))]
+  PAC <- altint <- rep(NA, n)
+  probs <- predict(object = trainfit, newdata,
+                  type = "prob")[indsv, ]
+  probs <- probs[, order(lab2int(colnames(probs)))]
   # rowSums(probs) # all 1
   # We can only compute PAC and altint where yint is not NA:
-  if(nvis > 0){ # if there are cases to visualize:
-    altintv = PACv = rep(NA, nvis)
-    for(i in seq_len(nvis)){
-      ptrue      = probs[i,yintv[i]]
-      others     = (seq_len(nlab))[-yintv[i]]
-      palt       = max(probs[i,others])
-      altintv[i] = others[which.max(probs[i,others])]
-      PACv[i]    = palt/(ptrue + palt)
+  if (nvis > 0) { # if there are cases to visualize:
+    altintv <- PACv <- rep(NA, nvis)
+    for (i in seq_len(nvis)) {
+      ptrue      <- probs[i, yintv[i]]
+      others     <- (seq_len(nlab))[-yintv[i]]
+      palt       <- max(probs[i, others])
+      altintv[i] <- others[which.max(probs[i, others])]
+      PACv[i]    <- palt / (ptrue + palt)
     }
-    PAC[indsv]    = PACv    # the other entries of PAC stay NA
-    altint[indsv] = altintv # the other entries of altint stay NA
+    PAC[indsv]    <- PACv    # the other entries of PAC stay NA
+    altint[indsv] <- altintv # the other entries of altint stay NA
   }
-  if(nlab==2) altint = 3 - yintnew # for consistency with svm etc.
+  if (nlab == 2) altint <- 3 - yintnew # for consistency with svm etc.
   #
   # Compute farness
-  figparams = vcr.rpart.train.out$figparams
-  k         = vcr.rpart.train.out$figparams$k
+  figparams <- vcr.rpart.train.out$figparams
+  k         <- vcr.rpart.train.out$figparams$k
   #
   # Construct dissimilarity matrix
   #
-  Xall = rbind(X, Xnew) # has ntrain + n rows
+  Xall <- rbind(X, Xnew) # has ntrain + n rows
   # Here we have used that the variables of Xnew are in the
   # same order as in X.
-  indn = (ntrain+1):(ntrain+n) # range of new rows
-  daisynew = daisy_vcr(Xall, daisy.out = figparams$daisy.out)
-  dismatnew = as.matrix(daisynew$disv)[indn, -indn, drop = FALSE]
-  dismatnew[is.na(dismatnew)] = figparams$meandis
-  sortNgb = t(apply(dismatnew,1,order))
-  sortDis = t(apply(dismatnew,1,sort))
-  if(LOO) sortNgb = sortNgb[,-1] # leave one out, only for testing
-  if(LOO) sortDis = sortDis[,-1] # leave one out, only for testing
+  indn <- (ntrain + 1):(ntrain + n) # range of new rows
+  daisynew <- daisy_vcr(Xall, daisy.out = figparams$daisy.out)
+  dismatnew <- as.matrix(daisynew$disv)[indn, -indn, drop = FALSE]
+  dismatnew[is.na(dismatnew)] <- figparams$meandis
+  sortNgb <- t(apply(dismatnew, 1, order))
+  sortDis <- t(apply(dismatnew, 1, sort))
+  if (LOO) sortNgb <- sortNgb[, -1] # leave one out, only for testing
+  if (LOO) sortDis <- sortDis[, -1] # leave one out, only for testing
   #
   # Compute initial fig[i,g] from all new cases to classes:
   #
-  fignew = matrix(rep(NA, n * nlab),ncol = nlab)
-  for(i in seq_len(n)){
-    for (g in seq_len(nlab)){
-      ngbg = which(yint[sortNgb[i,]] == g)
-      if(length(ngbg) > k) { ngbg = ngbg[seq_len(k)] }
-      fignew[i,g] = median(sortDis[i,ngbg])
+  fignew <- matrix(rep(NA, n * nlab), ncol = nlab)
+  for (i in seq_len(n)) {
+    for (g in seq_len(nlab)) {
+      ngbg <- which(yint[sortNgb[i, ]] == g)
+      if (length(ngbg) > k) {ngbg <- ngbg[seq_len(k)]}
+      fignew[i, g] <- median(sortDis[i, ngbg])
     }
   }
-  farout = compFarness(type = "knn", testdata = TRUE, yint = yintnew,
-                                  nlab = nlab, X = NULL, fig = fignew,
-                                  figparams = vcr.rpart.train.out$figparams)
+  farout <- compFarness(type = "knn", testdata = TRUE, yint = yintnew,
+                       nlab = nlab, X = NULL, fig = fignew,
+                       figparams = vcr.rpart.train.out$figparams)
 
   return(list(yintnew = yintnew,
               ynew = levels[yintnew],

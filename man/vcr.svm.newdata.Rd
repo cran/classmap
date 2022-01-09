@@ -8,7 +8,7 @@ Prepare for visualization of a support vector machine classification on new data
 Carries out a support vector machine classification of new data using the output of \code{\link{vcr.svm.train}} on the training data, and computes the quantities needed for its visualization.
 }
 \usage{
-vcr.svm.newdata(Xnew, ynew=NULL, vcr.svm.train.out)
+vcr.svm.newdata(Xnew, ynew = NULL, vcr.svm.train.out)
 }
 
 \arguments{
@@ -49,22 +49,23 @@ Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing clas
 \examples{
 
 library(e1071)
-set.seed(1); X = matrix(rnorm(200*2),ncol=2)
-X[1:100,] = X[1:100,]+2
-X[101:150,] = X[101:150,]-2
-y = as.factor(c(rep("blue",150),rep("red",50)))
+set.seed(1); X <- matrix(rnorm(200 * 2), ncol = 2)
+X[1:100, ] <- X[1:100, ] + 2
+X[101:150, ] <- X[101:150, ] - 2
+y <- as.factor(c(rep("blue", 150), rep("red", 50)))
 # We now fit an SVM with radial basis kernel to the data:
 set.seed(1) # to make the result of svm() reproducible.
-svmfit = svm(y~.,data=data.frame(X=X,y=y),scale=FALSE,kernel="radial",
-             cost=10, gamma=1, probability=TRUE)
-vcr.train = vcr.svm.train(X, y, svfit=svmfit)
+svmfit <- svm(y~., data = data.frame(X = X, y = y),
+scale = FALSE, kernel = "radial", cost = 10,
+gamma = 1, probability = TRUE)
+vcr.train <- vcr.svm.train(X, y, svfit = svmfit)
 # As "new" data we take a subset of the training data:
-inds = c(1:25,101:125,151:175)
-vcr.test = vcr.svm.newdata(X[inds,],y[inds],vcr.train)
-plot(vcr.test$PAC,vcr.train$PAC[inds]); abline(0,1) # match
-plot(vcr.test$farness,vcr.train$farness[inds]); abline(0,1)
+inds <- c(1:25, 101:125, 151:175)
+vcr.test <- vcr.svm.newdata(X[inds, ], y[inds], vcr.train)
+plot(vcr.test$PAC, vcr.train$PAC[inds]); abline(0, 1) # match
+plot(vcr.test$farness, vcr.train$farness[inds]); abline(0, 1)
 confmat.vcr(vcr.test)
-cols = c("deepskyblue3","red")
+cols <- c("deepskyblue3", "red")
 stackedplot(vcr.test, classCols = cols)
 classmap(vcr.train, "blue", classCols = cols) # for comparison
 classmap(vcr.test, "blue", classCols = cols)
@@ -72,7 +73,8 @@ classmap(vcr.train, "red", classCols = cols) # for comparison
 classmap(vcr.test, "red", classCols = cols)
 
 
-# For more examples, we refer to the vignettes:
+# For more examples, we refer to the vignette:
+\dontrun{
 vignette("Support_vector_machine_examples")
 }
-
+}

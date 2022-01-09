@@ -9,9 +9,10 @@ Make a vertically stacked mosaic plot of class predictions from the output of
 the outliers for each class can be shown as a gray rectangle at the top.
 }
 \usage{
-stackedplot(vcrout, cutoff = 0.99, classCols = NULL, classLabels = NULL,
-            separSize=1, minSize=1.5, showOutliers = TRUE, showLegend = FALSE,
-            htitle = NULL, vtitle = NULL)
+stackedplot(vcrout, cutoff = 0.99, classCols = NULL,
+classLabels = NULL, separSize=1, minSize=1.5,
+showOutliers = TRUE, showLegend = FALSE, main = NULL,
+htitle = NULL, vtitle = NULL)
 }
 
 \arguments{
@@ -23,6 +24,7 @@ stackedplot(vcrout, cutoff = 0.99, classCols = NULL, classLabels = NULL,
  \item{minSize}{rectangles describing less than \code{minSize} percent of the data, are shown as \code{minSize} percent.}
  \item{showOutliers}{if \code{TRUE}, shows a separate class in gray with the outliers, always at the top.}
  \item{showLegend}{if \code{TRUE}, a legend is shown to the right of the plot. Default \code{FALSE}, since the legend is not necessary as the colors are already visible in the bottom part of each stack.}
+ \item{main}{title for the plot.}
  \item{htitle}{title for horizontal axis (given labels). If  \code{NULL}, a default title is shown.}
  \item{vtitle}{title for vertical axis (predicted labels). If  \code{NULL}, a default title is shown.}
 }
@@ -46,24 +48,26 @@ Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing clas
 \examples{
 
 data("data_floralbuds")
-X = data_floralbuds[,1:6]; y = data_floralbuds[,7]
-vcrout = vcr.da.train(X,y)
-cols = c("saddlebrown","orange","olivedrab4","royalblue3")
-stackedplot(vcrout, classCols = cols, showLegend=TRUE)
+X <- data_floralbuds[, 1:6]; y <- data_floralbuds[, 7]
+vcrout <- vcr.da.train(X, y)
+cols <- c("saddlebrown", "orange", "olivedrab4", "royalblue3")
+stackedplot(vcrout, classCols = cols, showLegend = TRUE)
 
 # The legend is not really needed, since we can read the
 # color of a class from the bottom of its vertical bar:
-stackedplot(vcrout, classCols = cols)
+stackedplot(vcrout, classCols = cols, main = "Stacked plot of QDA on foral buds data")
 
 # If we do not wish to show outliers:
-stackedplot(vcrout, classCols = cols, showOutliers=FALSE)
+stackedplot(vcrout, classCols = cols, showOutliers = FALSE)
 
 # For more examples, we refer to the vignettes:
+\dontrun{
 vignette("Discriminant_analysis_examples")
 vignette("K_nearest_neighbors_examples")
 vignette("Support_vector_machine_examples")
 vignette("Rpart_examples")
 vignette("Random_forest_examples")
 vignette("Neural_net_examples")
+}
 }
 

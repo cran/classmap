@@ -52,30 +52,31 @@ Raymaekers J., Rousseeuw P.J.(2021). Silhouettes and quasi residual plots for ne
 
 \examples{
 library(rpart)
-# load("data_titanic.rdata")
 data("data_titanic")
-traindata = data_titanic[which(data_titanic$dataType == "train"), -13]
+traindata <- data_titanic[which(data_titanic$dataType == "train"), -13]
 str(traindata); table(traindata$y)
 set.seed(123) # rpart is not deterministic
-rpart.out = rpart(y ~ Pclass + Sex + SibSp +
+rpart.out <- rpart(y ~ Pclass + Sex + SibSp +
                     Parch + Fare + Embarked,
-                  data=traindata, method='class', model=TRUE)
-y_train = traindata[, 12]
-x_train = traindata[,-12]
-mytype = list(nominal=c("Name","Sex","Ticket","Cabin","Embarked"),
-              ordratio=c("Pclass"))
+                  data = traindata, method = 'class', model = TRUE)
+y_train <- traindata[, 12]
+x_train <- traindata[, -12]
+mytype <- list(nominal = c("Name", "Sex", "Ticket", "Cabin", "Embarked"), ordratio = c("Pclass"))
 # These are 5 nominal columns, and one ordinal.
 # The variables not listed are by default interval-scaled.
-vcrtrain = vcr.rpart.train(x_train, y_train, rpart.out, mytype)
-testdata = data_titanic[which(data_titanic$dataType == "test"), -13]
+vcrtrain <- vcr.rpart.train(x_train, y_train, rpart.out, mytype)
+testdata <- data_titanic[which(data_titanic$dataType == "test"), -13]
 dim(testdata)
-x_test = testdata[, -12]
-y_test = testdata[, 12]
-vcrtest = vcr.rpart.newdata(x_test, y_test, vcrtrain)
+x_test <- testdata[, -12]
+y_test <- testdata[, 12]
+vcrtest <- vcr.rpart.newdata(x_test, y_test, vcrtrain)
 confmat.vcr(vcrtest)
-silplot(vcrtest, classCols = c(2,4))
-classmap(vcrtest, "casualty", classCols = c(2,4))
-classmap(vcrtest, "survived", classCols = c(2,4))
+silplot(vcrtest, classCols = c(2, 4))
+classmap(vcrtest, "casualty", classCols = c(2, 4))
+classmap(vcrtest, "survived", classCols = c(2, 4))
 
+# For more examples, we refer to the vignette:
+\dontrun{
+vignette("Rpart_examples")
 }
-
+}

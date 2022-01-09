@@ -8,7 +8,7 @@ Carry out discriminant analysis on training data, and prepare to visualize its r
 Custom DA function which prepares for graphical displays such as the \code{\link{classmap}}. The disciminant analysis itself is carried out by the maximum a posteriori rule, which maximizes the density of the mixture.
 }
 \usage{
-vcr.da.train(X, y, rule = "QDA", estmethod = meancov)
+vcr.da.train(X, y, rule = "QDA", estmethod = "meancov")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,7 +17,7 @@ vcr.da.train(X, y, rule = "QDA", estmethod = meancov)
 \item{y}{a factor with the given class labels.}
 \item{rule}{either "\code{QDA}" for quadratic discriminant analysis or "\code{LDA}"  for linear discriminant analysis.}
 \item{estmethod}{function for location and covariance estimation.
-Should return a list with the center \code{$m} and the covariance matrix \code{$S}. The default is \code{meancov} (classical mean and covariance matrix), and the option \code{DetMCD} (based on \code{\link[robustbase:covMcd]{robustbase::covMcd}}) is also provided.}
+Should return a list with the center \code{$m} and the covariance matrix \code{$S}. The default is \code{"meancov"} (classical mean and covariance matrix), and the option \code{"DetMCD"} (based on \code{\link[robustbase:covMcd]{robustbase::covMcd}}) is also provided.}
 }
 
 
@@ -57,15 +57,16 @@ Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing clas
 \examples{
 
 data("data_floralbuds")
-X = data_floralbuds[,1:6]; y = data_floralbuds[,7]
-vcrout = vcr.da.train(X,y,rule="QDA")
-# For linear discriminant analysis, put rule="LDA".
+X <- data_floralbuds[, 1:6]; y <- data_floralbuds[, 7]
+vcrout <- vcr.da.train(X, y, rule = "QDA")
+# For linear discriminant analysis, put rule = "LDA".
 confmat.vcr(vcrout) # There are a few outliers
-cols = c("saddlebrown","orange","olivedrab4","royalblue3")
+cols <- c("saddlebrown", "orange", "olivedrab4", "royalblue3")
 stackedplot(vcrout, classCols = cols)
 classmap(vcrout, "bud", classCols = cols)
 
-# For more examples, we refer to the vignettes:
+# For more examples, we refer to the vignette:
+\dontrun{
 vignette("Discriminant_analysis_examples")
 }
-
+}

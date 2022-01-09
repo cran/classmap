@@ -51,27 +51,29 @@ Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing clas
 
 \examples{
 library(e1071)
-set.seed(1); X = matrix(rnorm(200*2),ncol=2)
-X[1:100,] = X[1:100,]+2
-X[101:150,] = X[101:150,]-2
-y = as.factor(c(rep("blue",150),rep("red",50)))
-cols = c("deepskyblue3","red")
-plot(X,col=cols[as.numeric(y)],pch=19)
+set.seed(1); X <- matrix(rnorm(200 * 2), ncol = 2)
+X[1:100, ] <- X[1:100, ] + 2
+X[101:150, ] <- X[101:150, ] - 2
+y <- as.factor(c(rep("blue", 150), rep("red", 50)))
+cols <- c("deepskyblue3", "red")
+plot(X, col = cols[as.numeric(y)], pch = 19)
 # We now fit an SVM with radial basis kernel to the data:
 set.seed(1) # to make the result of svm() reproducible.
-svmfit = svm(y~.,data=data.frame(X=X,y=y),scale=FALSE,kernel="radial",
-             cost=10, gamma=1, probability=TRUE)
-plot(svmfit$decision.values,col=cols[as.numeric(y)]); abline(h=0)
+svmfit <- svm(y~., data = data.frame(X = X, y = y),
+scale = FALSE, kernel = "radial", cost = 10,
+gamma = 1, probability = TRUE)
+plot(svmfit$decision.values, col = cols[as.numeric(y)]); abline(h = 0)
 # so the decision values separate the classes reasonably well.
-plot(svmfit,data=data.frame(X=X,y=y),X.2~X.1,col=cols)
+plot(svmfit, data = data.frame(X = X, y = y), X.2~X.1, col = cols)
 # The boundary is far from linear (but in feature space it is).
-vcr.train = vcr.svm.train(X, y, svfit=svmfit)
+vcr.train <- vcr.svm.train(X, y, svfit = svmfit)
 confmat.vcr(vcr.train)
 stackedplot(vcr.train, classCols = cols)
 classmap(vcr.train, "blue", classCols = cols)
 classmap(vcr.train, "red", classCols = cols)
 
-# For more examples, we refer to the vignettes:
+# For more examples, we refer to the vignette:
+\dontrun{
 vignette("Support_vector_machine_examples")
 }
-
+}

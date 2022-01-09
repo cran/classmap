@@ -70,32 +70,26 @@ Raymaekers J., Rousseeuw P.J.(2021). Silhouettes and quasi residual plots for ne
 
 \examples{
 library(rpart)
-# load("data_titanic.rdata")
 data("data_titanic")
-traindata = data_titanic[which(data_titanic$dataType == "train"), -13]
+traindata <- data_titanic[which(data_titanic$dataType == "train"), -13]
 str(traindata); table(traindata$y)
 set.seed(123) # rpart is not deterministic
-rpart.out = rpart(y ~ Pclass + Sex + SibSp +
+rpart.out <- rpart(y ~ Pclass + Sex + SibSp +
                     Parch + Fare + Embarked,
-                  data=traindata, method='class', model=TRUE)
-y_train = traindata[, 12]
-x_train = traindata[,-12]
-mytype = list(nominal=c("Name","Sex","Ticket","Cabin","Embarked"),
-              ordratio=c("Pclass"))
+                  data = traindata, method = 'class', model = TRUE)
+y_train <- traindata[, 12]
+x_train <- traindata[, -12]
+mytype <- list(nominal = c("Name", "Sex", "Ticket", "Cabin", "Embarked"), ordratio = c("Pclass"))
 # These are 5 nominal columns, and one ordinal.
 # The variables not listed are by default interval-scaled.
-vcrtrain = vcr.rpart.train(x_train, y_train, rpart.out, mytype)
+vcrtrain <- vcr.rpart.train(x_train, y_train, rpart.out, mytype)
 confmat.vcr(vcrtrain)
-silplot(vcrtrain, classCols = c(2,4))
-# Quasi residual plot:
-xm = x_train$Age[which(x_train$Sex == "male")]
-ym = vcrtrain$PAC[which(x_train$Sex == "male")]
-plot(xm, ym, main = "quasi residual plot for males",
-     xlab = "Age (years)", ylab = "P[alternative class]")
-lom = loess(ym ~ xm)
-lines(0:82, predict(lom, 0:82), col="red", lwd = 2)
-text(x=17,y=0.56,"loess curve",col="red", cex = 1)
-classmap(vcrtrain, "casualty", classCols = c(2,4))
-classmap(vcrtrain, "survived", classCols = c(2,4))
-}
+silplot(vcrtrain, classCols = c(2, 4))
+classmap(vcrtrain, "casualty", classCols = c(2, 4))
+classmap(vcrtrain, "survived", classCols = c(2, 4))
 
+# For more examples, we refer to the vignette:
+\dontrun{
+vignette("Rpart_examples")
+}
+}

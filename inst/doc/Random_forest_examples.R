@@ -12,7 +12,7 @@ library(classmap)
 
 ## -----------------------------------------------------------------------------
 data("data_instagram")
-traindata = data_instagram[which(data_instagram$dataType == "train"), -13]
+traindata <- data_instagram[which(data_instagram$dataType == "train"), -13]
 str(traindata)
 
 
@@ -40,84 +40,87 @@ table(traindata$y) # 50/50 split of genuine/fake accounts:
 
 ## -----------------------------------------------------------------------------
 set.seed(71) 
-rfout = randomForest(y ~ ., data=traindata, keep.forest=TRUE)
+rfout <- randomForest(y ~ ., data = traindata, keep.forest = TRUE)
 
 ## -----------------------------------------------------------------------------
-mytype = list(symm = c(1, 5, 7, 8)) 
+mytype <- list(symm = c(1, 5, 7, 8)) 
 
 ## -----------------------------------------------------------------------------
-vcrtrain = vcr.forest.train(X = x_train, y = y_train,
+vcrtrain <- vcr.forest.train(X = x_train, y = y_train,
                             trainfit = rfout, type = mytype)
 
 names(vcrtrain)
-vcrtrain$predint[c(1:10,301:310)] # prediction as integer
-vcrtrain$pred[c(1:10,301:310)]    # prediction as label
-vcrtrain$altint[c(1:10,301:310)]  # alternative label as integer
-vcrtrain$altlab[c(1:10,301:310)]  # alternative label
+vcrtrain$predint[c(1:10, 301:310)] # prediction as integer
+vcrtrain$pred[c(1:10, 301:310)]    # prediction as label
+vcrtrain$altint[c(1:10, 301:310)]  # alternative label as integer
+vcrtrain$altlab[c(1:10, 301:310)]  # alternative label
 
 # Probability of Alternative Class (PAC) of each object:
 vcrtrain$PAC[1:3] 
 #
 summary(vcrtrain$PAC)
 
-# f(i,g) is the distance from case i to class g:
-vcrtrain$fig[1:3,] # for the first 3 objects:
+# f(i, g) is the distance from case i to class g:
+vcrtrain$fig[1:3, ] # for the first 3 objects:
 
-# The farness of an object i is the f(i,g) to its own class: 
+# The farness of an object i is the f(i, g) to its own class: 
 vcrtrain$farness[1:3]
 #
 summary(vcrtrain$farness)
 
 # The "overall farness" of an object is defined as the 
-# lowest f(i,g) it has to any class g (including its own):
+# lowest f(i, g) it has to any class g (including its own):
 summary(vcrtrain$ofarness)
 
-sum(vcrtrain$ofarness > 0.99, na.rm = T) 
+sum(vcrtrain$ofarness > 0.99, na.rm = TRUE) 
 # With the default cutoff = 0.99 we find 6 outliers,
 # also shown in the last column of the confusion matrix:
 
 confmat.vcr(vcrtrain) 
 
 # If we do not want to show the outliers:
-confmat.vcr(vcrtrain, showOutliers = F)
+confmat.vcr(vcrtrain, showOutliers = FALSE)
 
 # Note that the accuracy is computed before any objects
 # are flagged, so it does not depend on the cutoff.
 # Here the accuracy is `perfect' due to overfitting. 
 # The out-of-box prediction accuracy is about 92%.
-cols = c("blue", "red3")
+cols <- c("blue", "red3")
 
 ## -----------------------------------------------------------------------------
-stackedplot(vcrtrain, classCols=cols)
+stackedplot(vcrtrain, classCols = cols, main =
+              "Instagram training data")
 
 # Silhouette plot:
-silplot(vcrtrain, classCols=cols)
+silplot(vcrtrain, classCols = cols)
 # Here all the s(i) are nonnegative (due to overfitting).
 
 # Class maps:
-classmap(vcrtrain, "genuine", classCols = cols) #, identify = T)
+classmap(vcrtrain, "genuine", classCols = cols) #, identify = TRUE)
 
 # farness outliers from furthest to closer: 45, 25, 41
 x_train[c(45, 25, 41), ] # they have huge numbers of followers.
 
-classmap(vcrtrain, "fake", classCols = cols) #, identify = T)
+classmap(vcrtrain, "fake", classCols = cols) #, identify = TRUE)
 # only case 261 is borderline far.
 
 ## -----------------------------------------------------------------------------
-testdata  = data_instagram[which(data_instagram$dataType == "test"), -13]
+testdata <- data_instagram[which(data_instagram$dataType == "test"), -13]
 Xnew <- testdata[, -12]
 ynew <- testdata[, 12]
 
 ## -----------------------------------------------------------------------------
-vcrtest = vcr.forest.newdata(Xnew, ynew, vcrtrain)
+vcrtest <- vcr.forest.newdata(Xnew, ynew, vcrtrain)
 
 confmat.vcr(vcrtest)
 
 ## -----------------------------------------------------------------------------
-stackedplot(vcrtest, classCols=cols)
+stackedplot(vcrtest, classCols = cols, 
+            main = "RF on Instagram test data")
 
 # Silhouette plot:
-silplot(vcrtest, classCols=cols) # now some s(i) are negative
+silplot(vcrtest, classCols = cols, main =
+          "Silhouettes of RF on Instagram test data") # now some s(i) are negative
 
 ## -----------------------------------------------------------------------------
 
@@ -144,29 +147,29 @@ Xnew[c(21, 29, 51), ] # and 2 more borderline cases
 # All of these characteristics are more common for fake profiles
 # than for genuine profiles, as we can see below:
 
-trcols = cols[as.numeric(y_train)]
+trcols <- cols[as.numeric(y_train)]
 
-plot(x_train[, 1], col=trcols, main="profile.pic")
+plot(x_train[, 1], col = trcols, main = "profile.pic")
 # fakes are less likely to have a profile picture
-plot(x_train[, 2], col=trcols, main="nums.length.username")
+plot(x_train[, 2], col = trcols, main = "nums.length.username")
 # is higher for fakes
-plot(x_train[, 3], col=trcols, main="fullname.words")
+plot(x_train[, 3], col = trcols, main = "fullname.words")
 # is lower for fakes
-plot(x_train[, 4], col=trcols, main="nums.length.fullname")
+plot(x_train[, 4], col = trcols, main = "nums.length.fullname")
 # is a bit higher for fakes
-plot(x_train[, 5], col=trcols, main="name..username")
+plot(x_train[, 5], col = trcols, main = "name..username")
 # mostly 0 for genuine; fakes have a few values 1
-plot(x_train[, 6], col=trcols, main="description.length")
+plot(x_train[, 6], col = trcols, main = "description.length")
 # fakes are typically lower, and more often zero
-plot(x_train[, 7], col=trcols, main="external.URL")
+plot(x_train[, 7], col = trcols, main = "external.URL")
 # fakes never had them, genuines sometimes did
-plot(x_train[, 8], col=trcols, main="private")
+plot(x_train[, 8], col = trcols, main = "private")
 # no visible difference
-plot((x_train[, 9])^0.1, col=trcols, main="X.posts")
+plot((x_train[, 9])^0.1, col = trcols, main = "X.posts")
 # fakes have fewer posts, and often none
-plot((x_train[, 10])^0.1, col=trcols, main="X.followers")
+plot((x_train[, 10])^0.1, col = trcols, main = "X.followers")
 # fakes have fewer followers, sometimes none
-plot((x_train[, 11])^0.1, col=trcols, main="X.follows")
+plot((x_train[, 11])^0.1, col = trcols, main = "X.follows")
 # fakes follow a bit fewer, but the difference is small.
 
 

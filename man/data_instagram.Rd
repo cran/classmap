@@ -47,5 +47,7 @@ data(data_instagram)
 str(data_instagram)
 
 # The data are used in:
+\dontrun{
 vignette("Random_forest_examples")
+}
 }

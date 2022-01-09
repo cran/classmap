@@ -9,9 +9,10 @@ Draw the class map to visualize classification results, based on the output of o
 }
 \usage{
 classmap(vcrout, whichclass, classLabels = NULL, classCols = NULL,
-         main = NULL, cutoff = 0.99, plotcutoff = TRUE, identify = FALSE,
-         cex = 1, cex.main=1.2, cex.lab=NULL, cex.axis=NULL, opacity = 1,
-         squareplot = TRUE,  maxprob = NULL, maxfactor=NULL)
+         main = NULL, cutoff = 0.99, plotcutoff = TRUE,
+         identify = FALSE, cex = 1, cex.main = 1.2, cex.lab = NULL,
+         cex.axis = NULL, opacity = 1,
+         squareplot = TRUE,  maxprob = NULL, maxfactor = NULL)
 }
 
 \arguments{
@@ -23,7 +24,7 @@ classmap(vcrout, whichclass, classLabels = NULL, classCols = NULL,
  \item{main}{title for the plot.}
   \item{cutoff}{cases with overall farness \code{vcrout$ofarness} > \code{cutoff} are flagged as outliers.}
    \item{plotcutoff}{If true, plots the cutoff on the farness values as a vertical line.}
- \item{identify}{if \code{TRUE}, invoke \code{\link[graphics:identify]{graphics::identify}} after plotting: left-click on a point to get its number, then ESC to exit.}
+ \item{identify}{if \code{TRUE}, left-click on a point to get its number, then ESC to exit.}
  \item{cex}{passed on to \code{\link[graphics:plot]{graphics::plot}}.}
  \item{cex.main}{same, for title.}
  \item{cex.lab}{same, for labels on horizontal and vertical axes.}
@@ -54,7 +55,7 @@ Raymaekers J., Rousseeuw P.J.(2021). Silhouettes and quasi residual plots for ne
 }
 
 \examples{
-vcrout = vcr.da.train(iris[,1:4], iris[,5])
+vcrout <- vcr.da.train(iris[, 1:4], iris[, 5])
 classmap(vcrout, "setosa", classCols = 2:4) # tight class
 classmap(vcrout, "versicolor", classCols = 2:4) # less tight
 # The cases misclassified as virginica are shown in blue.
@@ -62,11 +63,13 @@ classmap(vcrout, "virginica", classCols = 2:4)
 # The case misclassified as versicolor is shown in green.
 
 # For more examples, we refer to the vignettes:
+\dontrun{
 vignette("Discriminant_analysis_examples")
 vignette("K_nearest_neighbors_examples")
 vignette("Support_vector_machine_examples")
 vignette("Rpart_examples")
 vignette("Random_forest_examples")
 vignette("Neural_net_examples")
+}
 }
 

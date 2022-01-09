@@ -50,6 +50,7 @@ Raymaekers J., Rousseeuw P.J.(2021). Silhouettes and quasi residual plots for ne
 
 \examples{
 # For examples, we refer to the vignette:
+\dontrun{
 vignette("Neural_net_examples")
 }
-
+}

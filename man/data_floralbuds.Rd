@@ -37,5 +37,8 @@ str(data_floralbuds)
 summary(data_floralbuds)
 
 # The data are used in:
+\dontrun{
 vignette("Discriminant_analysis_examples")
+vignette("Neural_net_examples")
+}
 }

@@ -8,7 +8,7 @@ Carry out a k-nearest neighbor classification on training data, and prepare to v
 Carries out a k-nearest neighbor classification on the training data. Various additional output is produced for the purpose of constructing graphical displays such as the \code{\link{classmap}}.
 }
 \usage{
-vcr.knn.train(X,y,k)
+vcr.knn.train(X, y, k)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -52,13 +52,14 @@ Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing clas
 }
 
 \examples{
-vcrout = vcr.knn.train(iris[,1:4], iris[,5], k = 5)
+vcrout <- vcr.knn.train(iris[, 1:4], iris[, 5], k = 5)
 confmat.vcr(vcrout)
 stackedplot(vcrout)
 classmap(vcrout, "versicolor", classCols = 2:4)
 # The cases misclassified as virginica are shown in blue.
 
 # For more examples, we refer to the vignette:
+\dontrun{
 vignette("K_nearest_neighbors_examples")
 }
-
+}

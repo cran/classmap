@@ -51,14 +51,14 @@ Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing clas
 
 \examples{
 
-vcr.train = vcr.da.train(iris[,1:4], iris[,5])
-inds = c(51:150) # a subset, containing only 2 classes
-iris2 = iris[inds,] # fake "new" data
-iris2[c(1:10,51:60),5] = NA
-vcr.test = vcr.da.newdata(iris2[,1:4],iris2[,5],vcr.train)
+vcr.train <- vcr.da.train(iris[, 1:4], iris[, 5])
+inds <- c(51:150) # a subset, containing only 2 classes
+iris2 <- iris[inds, ] # fake "new" data
+iris2[c(1:10, 51:60), 5] <- NA
+vcr.test <- vcr.da.newdata(iris2[, 1:4], iris2[, 5], vcr.train)
 vcr.test$PAC[1:25] # between 0 and 1. Is NA where the response is.
-plot(vcr.test$PAC,vcr.train$PAC[inds]); abline(0,1) # match
-plot(vcr.test$farness,vcr.train$farness[inds]); abline(0,1) # match
+plot(vcr.test$PAC, vcr.train$PAC[inds]); abline(0, 1) # match
+plot(vcr.test$farness, vcr.train$farness[inds]); abline(0, 1) # match
 confmat.vcr(vcr.train) # for comparison
 confmat.vcr(vcr.test)
 stackedplot(vcr.train) # for comparison
@@ -67,6 +67,8 @@ classmap(vcr.train, "versicolor", classCols = 2:4) # for comparison
 classmap(vcr.test, "versicolor", classCols = 2:4) # has fewer points
 
 # For more examples, we refer to the vignette:
+\dontrun{
 vignette("Discriminant_analysis_examples")
+}
 }
 

@@ -8,7 +8,7 @@ Carry out a k-nearest neighbor classification on new data, and prepare to visual
 Predicts class labels for new data by k nearest neighbors, using the output of \code{\link{vcr.knn.train}} on the training data. For cases in the new data whose given label \code{ynew} is not \code{NA}, additional output is produced for constructing graphical displays such as the \code{\link{classmap}}.
 }
 \usage{
-vcr.knn.newdata(Xnew, ynew=NULL, vcr.knn.train.out, LOO=FALSE)
+vcr.knn.newdata(Xnew, ynew = NULL, vcr.knn.train.out, LOO = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -52,19 +52,20 @@ Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing clas
 
 \examples{
 data("data_floralbuds")
-X = data_floralbuds[,1:6]; y = data_floralbuds[,7]
-set.seed(12345); trainset = sample(1:550, 275)
-vcr.train = vcr.knn.train(X[trainset,],y[trainset], k=5)
-vcr.test = vcr.knn.newdata(X[-trainset,],y[-trainset],vcr.train)
+X <- data_floralbuds[, 1:6]; y <- data_floralbuds[, 7]
+set.seed(12345); trainset <- sample(1:550, 275)
+vcr.train <- vcr.knn.train(X[trainset, ], y[trainset], k = 5)
+vcr.test <- vcr.knn.newdata(X[-trainset, ], y[-trainset], vcr.train)
 confmat.vcr(vcr.train) # for comparison
 confmat.vcr(vcr.test)
-cols = c("saddlebrown","orange","olivedrab4","royalblue3")
+cols <- c("saddlebrown", "orange", "olivedrab4", "royalblue3")
 stackedplot(vcr.train, classCols = cols) # for comparison
 stackedplot(vcr.test, classCols = cols)
 classmap(vcr.train, "bud", classCols = cols) # for comparison
 classmap(vcr.test, "bud", classCols = cols)
 
 # For more examples, we refer to the vignette:
+\dontrun{
 vignette("K_nearest_neighbors_examples")
 }
-
+}

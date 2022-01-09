@@ -7,7 +7,7 @@ Constructs feature vectors from a kernel matrix.
 Constructs feature vectors from a kernel matrix.
 }
 \usage{
-makeFV(kmat,transfmat=NULL,precS=1e-12)
+makeFV(kmat, transfmat = NULL, precS = 1e-12)
 }
 
 \arguments{
@@ -44,29 +44,31 @@ Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing clas
 
 \examples{
 library(e1071)
-set.seed(1); X = matrix(rnorm(200*2),ncol=2)
-X[1:100,] = X[1:100,]+2
-X[101:150,] = X[101:150,]-2
-y = as.factor(c(rep("blue",150),rep("red",50)))
-cols = c("deepskyblue3","red")
-plot(X,col=cols[as.numeric(y)],pch=19)
+set.seed(1); X <- matrix(rnorm(200 * 2), ncol = 2)
+X[1:100, ] <- X[1:100, ] + 2
+X[101:150, ] <- X[101:150, ] - 2
+y <- as.factor(c(rep("blue", 150), rep("red", 50)))
+cols <- c("deepskyblue3", "red")
+plot(X, col = cols[as.numeric(y)], pch = 19)
 # We now fit an SVM with radial basis kernel to the data:
-svmfit = svm(y~., data=data.frame(X=X,y=y), scale=FALSE,
-             kernel="radial", cost=10, gamma=1, probability=TRUE)
-Kxx = makeKernel(X,svfit=svmfit)
-outFV = makeFV(Kxx)
-Xf = outFV$Xf # The data matrix in this feature space.
+svmfit <- svm(y~.,  data = data.frame(X = X, y = y),  scale = FALSE,
+             kernel = "radial", cost = 10, gamma = 1, probability = TRUE)
+Kxx <- makeKernel(X, svfit = svmfit)
+outFV <- makeFV(Kxx)
+Xf <- outFV$Xf # The data matrix in this feature space.
 dim(Xf) # The feature vectors are high dimensional.
 # The inner products of Xf match the kernel matrix:
 max(abs(as.vector(Kxx - crossprod(t(Xf), t(Xf))))) # 6.167711e-11 # tiny, OK
 range(rowSums(Xf^2)) # all points in Xf lie on the unit sphere.
-pairs(Xf[,1:5],col=cols[as.numeric(y)])
+pairs(Xf[, 1:5], col = cols[as.numeric(y)])
 # In some of these we see spherical effects, e.g.
-plot(Xf[,1],Xf[,5],col=cols[as.numeric(y)],pch=19)
+plot(Xf[, 1], Xf[, 5], col = cols[as.numeric(y)], pch = 19)
 # The data look more separable here than in the original
 # two-dimensional space.
 
 # For more examples, we refer to the vignette:
+\dontrun{
 vignette("Support_vector_machine_examples")
+}
 }
 

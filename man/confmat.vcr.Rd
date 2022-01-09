@@ -40,7 +40,7 @@ Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing clas
 
 \examples{
 
-vcrout = vcr.knn.train(scale(iris[,1:4]), iris[,5], k=5)
+vcrout <- vcr.knn.train(scale(iris[, 1:4]), iris[, 5], k = 5)
 # The usual confusion matrix:
 confmat.vcr(vcrout, showOutliers = FALSE)
 
@@ -52,13 +52,18 @@ confmat.vcr(vcrout)
 # Note that the accuracy is computed before any cases
 # are flagged, so it does not depend on the cutoff.
 
-confmat.vcr(vcrout,showClassNumbers=TRUE)
+confmat.vcr(vcrout, showClassNumbers = TRUE)
 # Shows class numbers instead of labels. This option can
 # be useful for long level names.
 
 # For more examples, we refer to the vignettes:
+\dontrun{
 vignette("Discriminant_analysis_examples")
 vignette("K_nearest_neighbors_examples")
 vignette("Support_vector_machine_examples")
+vignette("Rpart_examples")
+vignette("Random_forest_examples")
+vignette("Neural_net_examples")
+}
 }
 

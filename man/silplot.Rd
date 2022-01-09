@@ -53,11 +53,16 @@ Raymaekers J., Rousseeuw P.J.(2021). Silhouettes and quasi residual plots for ne
 }
 
 \examples{
-vcrout = vcr.da.train(iris[,1:4], iris[,5])
+vcrout <- vcr.da.train(iris[, 1:4], iris[, 5])
 silplot(vcrout)
 # For more examples, we refer to the vignettes:
+\dontrun{
+vignette("Discriminant_analysis_examples")
+vignette("K_nearest_neighbors_examples")
+vignette("Support_vector_machine_examples")
 vignette("Rpart_examples")
 vignette("Forest_examples")
 vignette("Neural_net_examples")
+}
 }
 

@@ -1,4 +1,4 @@
-vcr.svm.train = function(X, y, svfit, ortho = FALSE){
+vcr.svm.train <- function(X, y, svfit, ortho = FALSE) {
   #
   # Computes the quantities required for classmap().
   # Unfortunately X and y are not in the output of svm(),
@@ -40,166 +40,171 @@ vcr.svm.train = function(X, y, svfit, ortho = FALSE){
   #   ofarness  : For each object i, its lowest farness to any class.
   #               If much above 1, we suspect i may be an outlier.
   #
-  X = as.matrix(X) # in case it is a data frame
-  if(nrow(X) == 1) X=t(X)
-  if(sum(is.na(as.vector(X))) > 0){
-    stop("The data matrix X has NA's.") }
-  n = nrow(X)
-  d = ncol(X) # can be 1, is OK
-  if(n < 2) stop(" X should have more than one row")
+  X <- as.matrix(X) # in case it is a data frame
+  if (nrow(X) == 1) X <- t(X)
+  if (sum(is.na(as.vector(X))) > 0) {
+    stop("The data matrix X has NA's.")
+  }
+  n <- nrow(X)
+  d <- ncol(X) # can be 1, is OK
+  if (n < 2) stop(" X should have more than one row")
   # Check whether y and its levels are of the right form:
-  checked = checkLabels(y, n, training = T)
+  checked <- checkLabels(y, n, training = TRUE)
   # If it did not stop: yint has length n, and its values are in
-  # 1,...,nlab without gaps. It is NA where y is: outside indsv.
-  lab2int = checked$lab2int # is a function
-  levels  = checked$levels
-  nlab    = length(levels)
-  yint    = lab2int(y)
-  indsv   = checked$indsv
-  nvis    = length(indsv) # is >= 1 (else checkLabels has stopped)
-  yintv   = yint[indsv] # entries of yint that can be visualized
+  # 1, ..., nlab without gaps. It is NA where y is: outside indsv.
+  lab2int <- checked$lab2int # is a function
+  levels  <- checked$levels
+  nlab    <- length(levels)
+  yint    <- lab2int(y)
+  indsv   <- checked$indsv
+  nvis    <- length(indsv) # is >= 1 (else checkLabels has stopped)
+  yintv   <- yint[indsv] # entries of yint that can be visualized
   #
-  if(ortho==T & nlab!=2) stop(
-    " ortho=T is only possible for 2 classes")
-  if(is.null(svfit$compprob)) stop(" svfit$compprob is missing")
-  if(svfit$compprob == F){
+  if (ortho == TRUE & nlab != 2) stop(
+    " ortho=TRUE is only possible for 2 classes")
+  if (is.null(svfit$compprob)) stop(" svfit$compprob is missing")
+  if (svfit$compprob == FALSE) {
     stop(paste0("\n The object svfit needs to be obtained by ",
-                "\n running e1071::svm with probability=TRUE")) }
-  if(is.null(svfit$kernel)) {
-    stop(" svfit$kernel is missing") } else {
-      k = svfit$kernel }
-  if(!(k==0 | k=="linear" | k==1 | k=="polynomial" |
-       k==2 | k=="radial" | k==3 | k=="sigmoid")) {
-    stop(paste(" Unknown kernel type: ",k,sep="")) }
-  if(is.null(svfit$scaled)) {
-    stop(" svfit$scaled is missing") } else {
-      scaled = svfit$scaled }
-  if(is.null(svfit$degree)) {
-    stop(" svfit$degree is missing") } else {
-      degree = svfit$degree }
-  if(is.null(svfit$gamma)) {
-    stop(" svfit$gamma is missing") } else {
-      gamma = svfit$gamma }
-  if(is.null(svfit$coef0)) {
-    stop(" svfit$coef0 is missing") } else {
-      coef0 = svfit$coef0 }
-  if(is.null(svfit$cost)) {
-    stop(" svfit$cost is missing") } else {
-      cost = svfit$cost }
-  k; scaled; degree; gamma; coef0; cost
-  if(is.null(svfit$fitted) | is.null(svfit$decision.values)){
+                "\n running e1071::svm with probability=TRUE"))
+  }
+  if (is.null(svfit$kernel)) {
+    stop(" svfit$kernel is missing")
+  } else {
+    k <- svfit$kernel
+  }
+  if (!(k == 0 | k == "linear" | k == 1 | k == "polynomial" |
+        k == 2 | k == "radial" | k == 3 | k == "sigmoid")) {
+    stop(paste(" Unknown kernel type: ", k, sep = ""))
+  }
+  if (is.null(svfit$scaled)) {
+    stop(" svfit$scaled is missing")
+  } else {
+    scaled <- svfit$scaled
+  }
+  if (is.null(svfit$degree)) {
+    stop(" svfit$degree is missing")
+  } else {
+    degree <- svfit$degree
+  }
+  if (is.null(svfit$gamma)) {
+    stop(" svfit$gamma is missing")
+  } else {
+    gamma <- svfit$gamma
+  }
+  if (is.null(svfit$coef0)) {
+    stop(" svfit$coef0 is missing")
+  } else {
+    coef0 <- svfit$coef0
+  }
+  if (is.null(svfit$cost)) {
+    stop(" svfit$cost is missing")
+  } else {
+    cost <- svfit$cost
+  }
+  if (is.null(svfit$fitted) | is.null(svfit$decision.values)) {
     # svfit is not an svm object, so we need to run svm() in
     # order to obtain both these outputs that we need.
-    if(k==0) { ktype = "linear" }
-    if(k==1) { ktype = "polynomial" }
-    if(k==2) { ktype = "radial" }
-    if(k==3) { ktype = "sigmoid" }
-    # svfit = svm(X,as.factor(yint),scale=scaled,kernel=ktype,
-    svfit = svm(X,y,scale=scaled,kernel=ktype,
-                degree=degree,gamma=gamma,coef0=coef0,
-                cost=cost,probability=T)
+    if (k == 0) {ktype <- "linear"}
+    if (k == 1) {ktype <- "polynomial"}
+    if (k == 2) {ktype <- "radial"}
+    if (k == 3) {ktype <- "sigmoid"}
+    svfit <- svm(X, y, scale = scaled, kernel = ktype,
+                 degree = degree, gamma = gamma, coef0 = coef0,
+                 cost = cost, probability = TRUE)
   }
   #
   # Compute predint, altint, and PAC
   #
-  # preds = e1071:::predict.svm(object = svfit,
-  #                             newdata = data.frame(X=X),
-  #                             probability = T)
-  preds = predict(object = svfit,
-                  newdata = data.frame(X=X),
-                  probability = T)
+  preds <- predict(object = svfit,
+                   newdata = data.frame(X = X),
+                   probability = TRUE)
 
-  predint = lab2int(preds) # for all cases, even those
+  predint <- lab2int(preds) # for all cases, even those
   #                        # with missing y.
-  altint = PAC = rep(NA,n)
+  altint <- PAC <- rep(NA, n)
   # altint and PAC will be NA outside on indsv, so we put:
-  altintv = PACv = rep(NA,nvis)
+  altintv <- PACv <- rep(NA, nvis)
   #
-  if(nlab == 2) { # Binary classification. In this setting there
+  if (nlab == 2) { # Binary classification. In this setting there
     # is only a single decision variable.
-    altintv = 3-yintv # the alternative is always the other class
+    altintv <- 3 - yintv # the alternative is always the other class
     #
-    probs = attr(preds,"probabilities")[indsv,]
-    probs = probs[,order(lab2int(colnames(probs)))]
-    for(i in seq_len(nvis)) PACv[i] = probs[i,altintv[i]]
+    probs <- attr(preds, "probabilities")[indsv, ]
+    probs <- probs[, order(lab2int(colnames(probs)))]
+    for (i in seq_len(nvis)) PACv[i] <- probs[i, altintv[i]]
   }
-  if(nlab > 2){ # More than 2 classes
-    probs = attr(preds,"probabilities")[indsv,]
-    probs = probs[,order(lab2int(colnames(probs)))]
+  if (nlab > 2) { # More than 2 classes
+    probs <- attr(preds, "probabilities")[indsv, ]
+    probs <- probs[, order(lab2int(colnames(probs)))]
     # rowSums(probs) # all 1
-    for(i in seq_len(nvis)){
-      ptrue      = probs[i,yintv[i]]
-      others     = (seq_len(nlab))[-yintv[i]]
-      palt       = max(probs[i,others])
-      altintv[i] = others[which.max(probs[i,others])]
-      PACv[i]    = palt/(ptrue + palt)
+    for (i in seq_len(nvis)) {
+      ptrue      <- probs[i, yintv[i]]
+      others     <- (seq_len(nlab))[-yintv[i]]
+      palt       <- max(probs[i, others])
+      altintv[i] <- others[which.max(probs[i, others])]
+      PACv[i]    <- palt / (ptrue + palt)
     }
   } # ends nlab > 2
-  altint[indsv] = altintv # and stays NA outside indsv
-  PAC[indsv]    = PACv    # and stays NA outside indsv
+  altint[indsv] <- altintv # and stays NA outside indsv
+  PAC[indsv]    <- PACv    # and stays NA outside indsv
   #
   # Compute farness
   #
-  X = X[indsv,] # because this is what we will need to
+  X <- X[indsv, ] # because this is what we will need to
   # keep for use with the new data
-  Xloadings = transfmat = nbeta = NULL
-  if(k==0) { # kernel was linear
-    Xfar = X
-  } else { # kernel was nonlinear, so construct feature space:
-    FVout = makeFV(makeKernel(X,svfit=svfit),precS=1e-12)
-    Xfar  = FVout$Xf # X in feature space
-    FVout = FVout$transfmat # to save space
-    transfmat = FVout; rm(FVout) # R's rename
+  Xloadings <- transfmat <- nbeta <- NULL
+  if (k == 0) { # kernel was linear
+    Xfar <- X
+  } else {# kernel was nonlinear, so construct feature space:
+    FVout <- makeFV(makeKernel(X, svfit = svfit), precS = 1e-12)
+    Xfar  <- FVout$Xf # X in feature space
+    FVout <- FVout$transfmat # to save space
+    transfmat <- FVout; rm(FVout) # R's rename
     # We keep transfmat for new data.
   }
-  dim(Xfar)
-  #
-  if(k==0) { # kernel was linear
-    PCout = truncPC(Xfar, ncomp=min(20,ncol(Xfar)),
-                    center=F, scale=F)
-    eigs  = PCout$eigenvalues[seq_len(PCout$rank)]
-    qkeep = sum(eigs > 1e-8)
-    Xloadings = PCout$loadings[,seq_len(qkeep),drop=F]
-    Xfar = Xfar%*%Xloadings
-  } else { # kernel is nonlinear, so Xfar stems from makeFV
-    qkeep = min(20,ncol(Xfar))
-    Xfar = Xfar[,seq_len(qkeep)]
-    attr(transfmat,"keep") = qkeep
+
+  if (k == 0) { # kernel was linear
+    PCout <- truncPC(Xfar, ncomp = min(20, ncol(Xfar)),
+                     center = FALSE, scale = FALSE)
+    eigs  <- PCout$eigenvalues[seq_len(PCout$rank)]
+    qkeep <- sum(eigs > 1e-8)
+    Xloadings <- PCout$loadings[, seq_len(qkeep), drop = FALSE]
+    Xfar <- Xfar %*% Xloadings
+  } else {# kernel is nonlinear, so Xfar stems from makeFV
+    qkeep <- min(20, ncol(Xfar))
+    Xfar <- Xfar[, seq_len(qkeep)]
+    attr(transfmat, "keep") <- qkeep
   }
   #
-  if(ortho == T){
+  if (ortho == TRUE) {
     # We would have stopped if nlab!=2, so nlab is 2.
     # In examples with spherical kernels (RBF, string)
     # the choice ortho=T made no visible difference.
-    fitfs = svm(Xfar,y,scale=F,kernel="linear",
-                cost=cost)
-    beta = coef(fitfs)[-1]
-    beta = matrix(beta,ncol=1)
-    # intercept = coef(fitfs)[1] # not needed here
-    # fits = Xfar%*%beta + intercept # not needed here
-    # plot(fits,decisv) # identical: explains decision values.
-    #
+    fitfs <- svm(Xfar, y, scale = FALSE, kernel = "linear",
+                 cost = cost)
+    beta <- coef(fitfs)[-1]
+    beta <- matrix(beta, ncol = 1)
+
     # For orhogonal complement, first normalize beta:
-    nbeta = beta/sqrt(sum(beta*beta))
+    nbeta <- beta / sqrt(sum(beta * beta))
     # Project Xfar orthogonally to nbeta:
-    Xfar = Xfar - Xfar%*%nbeta%*%t(nbeta)
-    # (Xfar %*% beta) # all 0, so Xfar is on a hyperplane through 0
+    Xfar <- Xfar - Xfar %*% nbeta %*% t(nbeta)
   }
-  farout = compFarness(type = "pca", testdata = F, yint = yintv,
-                       nlab = nlab, X = Xfar, fig = NULL, d = NULL,
-                       figparams = NULL, PCAfits = NULL, keepPCA = T)
-  fig = matrix(rep(0,n*nlab),ncol=nlab)
-  fig[indsv,] = farout$fig
-  farness = ofarness = rep(NA,n)
-  farness[indsv] = farout$farness
-  ofarness[indsv] = farout$ofarness
+  farout <- compFarness(type = "pca", testdata = FALSE, yint = yintv,
+                        nlab = nlab, X = Xfar, fig = NULL, d = NULL,
+                        figparams = NULL, PCAfits = NULL, keepPCA = TRUE)
+  fig <- matrix(rep(0, n * nlab), ncol = nlab)
+  fig[indsv,] <- farout$fig
+  farness <- ofarness <- rep(NA, n)
+  farness[indsv] <- farout$farness
+  ofarness[indsv] <- farout$ofarness
   # Add all intermediate farness objects to figparams:
-  figparams = farout$figparams
-  figparams$ortho = ortho
-  figparams$nbeta = nbeta
-  figparams$Xloadings = Xloadings
-  figparams$transfmat = transfmat
-  figparams$PCAfits = farout$PCAfits
+  figparams <- farout$figparams
+  figparams$ortho <- ortho
+  figparams$nbeta <- nbeta
+  figparams$Xloadings <- Xloadings
+  figparams$transfmat <- transfmat
+  figparams$PCAfits <- farout$PCAfits
   return(list(yint = yint,
               y = levels[yint],
               levels = levels,
@@ -214,21 +219,10 @@ vcr.svm.train = function(X, y, svfit, ortho = FALSE){
               ofarness = ofarness,
               svfit = svfit,
               X = X))
-  # probs = probs,
-  # # medSD = farout$medSD,
-  # # medOD = farout$medOD,
-  # # SDs = farout$SDs,
-  # # ODs = farout$ODs,
-  # transfmat = transfmat,
-  # ortho = ortho,
-  # nbeta = nbeta,
-  # Xloadings = Xloadings,
-  # PCAfits = farout$PCAfits
-  # ))
 }
 
 
-vcr.svm.newdata = function(Xnew, ynew=NULL, vcr.svm.train.out){
+vcr.svm.newdata <- function(Xnew, ynew = NULL, vcr.svm.train.out) {
   #
   # Predicts class labels for new data by SVM, using the output
   # of vcr.svm.train() on the training data.
@@ -269,112 +263,109 @@ vcr.svm.newdata = function(Xnew, ynew=NULL, vcr.svm.train.out){
   #               Always exists. If much above 1, we suspect i may be
   #               an outlier.
   #
-  Xnew = as.matrix(Xnew) # in case it is a data frame
-  if(nrow(Xnew) == 1) Xnew=t(Xnew)
-  n = nrow(Xnew)
-  if(is.null(vcr.svm.train.out$figparams$PCAfits)){
+  Xnew <- as.matrix(Xnew) # in case it is a data frame
+  if (nrow(Xnew) == 1) Xnew <- t(Xnew)
+  n <- nrow(Xnew)
+  if (is.null(vcr.svm.train.out$figparams$PCAfits)) {
     stop(paste0("\nFor test data, the farness computation ",
-                "requires the trained object","\nto contain ",
+                "requires the trained object", "\nto contain ",
                 "the value figparams$PCAfits."))
   }
-  PCAfits = vcr.svm.train.out$figparams$PCAfits
-  if(sum(is.na(as.vector(Xnew))) > 0) stop(
+  PCAfits <- vcr.svm.train.out$figparams$PCAfits
+  if (sum(is.na(as.vector(Xnew))) > 0) stop(
     "The data matrix Xnew contains NA's.")
-  levels = vcr.svm.train.out$levels # same as in training data
-  nlab   = length(levels) # number of classes
+  levels <- vcr.svm.train.out$levels # same as in training data
+  nlab   <- length(levels) # number of classes
   #
-  if(is.null(ynew)) ynew = factor(rep(NA,n), levels=levels)
-  checked = checkLabels(ynew, n, training = F, levels)
-  lab2int = checked$lab2int # is a function
-  indsv   = checked$indsv   # INDiceS of cases we can Visualize,
+  if (is.null(ynew)) ynew <- factor(rep(NA, n), levels = levels)
+  checked <- checkLabels(ynew, n, training = FALSE, levels)
+  lab2int <- checked$lab2int # is a function
+  indsv   <- checked$indsv   # INDiceS of cases we can Visualize,
   #                         # can even be empty, is OK.
-  nvis    = length(indsv)   # can be zero.
-  yintnew = rep(NA,n)       # needed to overwrite "new" levels.
-  yintnew[indsv] = lab2int(ynew[indsv])
+  nvis    <- length(indsv)   # can be zero.
+  yintnew <- rep(NA, n)       # needed to overwrite "new" levels.
+  yintnew[indsv] <- lab2int(ynew[indsv])
   # Any "new" levels are now set to NA.
-  yintv   = yintnew[indsv]  # entries of yintnew that can be visualized
+  yintv   <- yintnew[indsv]  # entries of yintnew that can be visualized
   #
   # Make predictions for new data:
   #
-  svfit = vcr.svm.train.out$svfit # trained model
-  k     = svfit$kernel
-  # preds = e1071:::predict.svm(object = svfit,
-  #                             newdata = data.frame(X = Xnew),
-  #                             decision.values = T,
-  #                             probability = T)
-  preds = predict(object = svfit,
-                  newdata = data.frame(X = Xnew),
-                  decision.values = T,
-                  probability = T)
-  predint = lab2int(preds)
+  svfit <- vcr.svm.train.out$svfit # trained model
+  k     <- svfit$kernel
+  preds <- predict(object = svfit,
+                   newdata = data.frame(X = Xnew),
+                   decision.values = TRUE,
+                   probability = TRUE)
+  predint <- lab2int(preds)
   #
   # Compute altint and PAC
   #
-  altint = PAC = rep(NA, n) # initializations
+  altint <- PAC <- rep(NA, n) # initializations
   # altint and PAC will be NA outside of indsv.
-  if(nvis > 0){ # If there are cases to visualize
-    altintv = PACv = rep(NA,nvis)
+  if (nvis > 0) { # If there are cases to visualize
+    altintv <- PACv <- rep(NA, nvis)
     #
-    if(nlab == 2) { # Binary classification.
-      altintv = 3-yintv # the alternative is always the other class
+    if (nlab == 2) { # Binary classification.
+      altintv <- 3 - yintv # the alternative is always the other class
       #
-      probs = attr(preds,"probabilities")[indsv,]
-      probs = probs[,order(lab2int(colnames(probs)))]
-      for(i in seq_len(nvis)) PACv[i] = probs[i,altintv[i]]
+      probs <- attr(preds, "probabilities")[indsv, ]
+      probs <- probs[, order(lab2int(colnames(probs)))]
+      for (i in seq_len(nvis)) PACv[i] <- probs[i, altintv[i]]
     }
-    if(nlab > 2){ # More than 2 classes
+    if (nlab > 2) { # More than 2 classes
       #
-      probs = attr(preds,"probabilities")[indsv,]
-      probs = probs[,order(lab2int(colnames(probs)))]
+      probs <- attr(preds, "probabilities")[indsv, ]
+      probs <- probs[, order(lab2int(colnames(probs)))]
       # nvis by nlab matrix with estimated class probabilities
       # rowSums(probs) # all 1
-      for(i in seq_len(nvis)){
-        ptrue      = probs[i,yintv[i]]
-        others     = (seq_len(nlab))[-yintv[i]]
-        palt       = max(probs[i,others])
-        altintv[i] = others[which.max(probs[i,others])]
-        PACv[i]    = palt/(ptrue + palt)
+      for (i in seq_len(nvis)) {
+        ptrue      <- probs[i, yintv[i]]
+        others     <- (seq_len(nlab))[-yintv[i]]
+        palt       <- max(probs[i, others])
+        altintv[i] <- others[which.max(probs[i, others])]
+        PACv[i]    <- palt / (ptrue + palt)
       }
     }
-    PAC[indsv] = PACv # in the other cases it remains NA
-    altint[indsv] = altintv # also here.
+    PAC[indsv] <- PACv # in the other cases it remains NA
+    altint[indsv] <- altintv # also here.
   }
   #
   # Compute farness
   #
-  Zfar = Xnew; rm(Xnew) # R's rename to save space
-  if(k==0) { # kernel was linear
-    Xloadings = vcr.svm.train.out$figparams$Xloadings # from training data
-    if(!is.null(Xloadings)){ # (else Zfar remains unchanged)
+  Zfar <- Xnew; rm(Xnew) # R's rename to save space
+  if (k == 0) { # kernel was linear
+    Xloadings <- vcr.svm.train.out$figparams$Xloadings # from training data
+    if (!is.null(Xloadings)) { # (else Zfar remains unchanged)
       # We carried out an initial PCA on the training data, so
       # we have to replicate this here, else our PCAfits are
       # no longer in the same coordinate system.
-      Zfar = Zfar%*%Xloadings # to match the training data
+      Zfar <- Zfar %*% Xloadings # to match the training data
     }
-  } else { # kernel was not linear
-    if(is.null(vcr.svm.train.out$figparams$transfmat)) {
-      stop("vcr.svm.train.out$figparams$transfmat is missing") }
+  } else {# kernel was not linear
+    if (is.null(vcr.svm.train.out$figparams$transfmat)) {
+      stop("vcr.svm.train.out$figparams$transfmat is missing")
+    }
     # We had to store X in vcr.svm.train.out to be able to do:
-    Zfar = makeFV(makeKernel(Zfar,vcr.svm.train.out$X,
-                             svfit=vcr.svm.train.out$svfit),
-                  vcr.svm.train.out$figparams$transfmat)$Xf
+    Zfar <- makeFV(makeKernel(Zfar, vcr.svm.train.out$X,
+                              svfit = vcr.svm.train.out$svfit),
+                   vcr.svm.train.out$figparams$transfmat)$Xf
   }
   # Zfar lives in the Xfar space from the training data.
   # dim(Zfar)
-  if(vcr.svm.train.out$figparams$ortho == T){
+  if (vcr.svm.train.out$figparams$ortho == TRUE) {
     # We would have stopped if nlab!=2, so nlab is 2.
-    nbeta = vcr.svm.train.out$figparams$nbeta
+    nbeta <- vcr.svm.train.out$figparams$nbeta
     # nbeta is in the Xfar space too.
     # Project Zfar orthogonally to nbeta:
-    Zfar = Zfar - Zfar%*%nbeta%*%t(nbeta)
+    Zfar <- Zfar - Zfar %*% nbeta %*% t(nbeta)
     # (Zfar%*%nbeta) # all 0: Zfar is on a hyperplane through 0.
   }
   #  dim(Zfar)
-  farout = compFarness(type="pca", testdata = T, yint = yintnew,
-                       nlab = nlab, X = Zfar, fig = NULL,
-                       d = NULL,
-                       figparams = vcr.svm.train.out$figparams,
-                       PCAfits = PCAfits, keepPCA = F)
+  farout <- compFarness(type = "pca", testdata = TRUE, yint = yintnew,
+                        nlab = nlab, X = Zfar, fig = NULL,
+                        d = NULL,
+                        figparams = vcr.svm.train.out$figparams,
+                        PCAfits = PCAfits, keepPCA = FALSE)
   return(list(yintnew = yintnew,
               ynew = levels[yintnew],
               levels = levels,

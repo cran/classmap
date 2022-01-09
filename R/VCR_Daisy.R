@@ -1,6 +1,6 @@
-daisy_vcr = function(x, daisy.out = NULL, type = NULL,
+daisy_vcr <- function(x, daisy.out = NULL, type = NULL,
                      weights = NULL, mybounds = NULL,
-                     warnBin = F, stand = TRUE) {
+                     warnBin = FALSE, stand = TRUE) {
   #
   # To do:
   # - let daisy_vcr take X, Xnew and then compute the rectangular
@@ -55,39 +55,40 @@ daisy_vcr = function(x, daisy.out = NULL, type = NULL,
   # warnBin   : if TRUE, a warning is given whenever a numeric
   #             variable takes on only 2 values.
   #
-  if(length(dim(x)) != 2 && !(is.data.frame(x))) {
-    stop("x is not a dataframe or a matrix.") }
+  if (length(dim(x)) != 2 && !(is.data.frame(x))) {
+    stop("x is not a dataframe or a matrix.")
+    }
   xorig <- x
   n <- nrow(x)
   p <- ncol(x)
   #
   if (is.null(daisy.out)) {
     # Checking the weights:
-    if (is.null(weights)) weights = 1
+    if (is.null(weights)) weights <- 1
     if (length(weights) == 1) {
       weights <- rep.int(weights, p)
     } else if (length(weights) != p) {
       stop(paste0("'weights' must be of length ", p," (or 1)."))
     }
-    if(sum(weights < 0) > 0) stop("There are negative weights.")
-    if(is.null(type)) type = list()
+    if (sum(weights < 0) > 0) stop("There are negative weights.")
+    if (is.null(type)) type <- list()
     #
   } else {
     # calculate dissimilarities on new data using
     # the result daisy.out from the training data:
-    if(!is.null(weights)) warning(paste0(
+    if (!is.null(weights)) warning(paste0(
       "\nFor new data, the weights of the training data are used.",
       "\nThe argument 'weights' in this call will not be used."))
-    weights = daisy.out$weights
-    if(!is.null(type)) warning(paste0(
+    weights <- daisy.out$weights
+    if (!is.null(type)) warning(paste0(
       "\nFor new data, the types of the training data are used.",
       "\nThe argument 'type' in this call will not be used."))
-    type  = daisy.out$type
-    x_old = daisy.out$x
+    type  <- daisy.out$type
+    x_old <- daisy.out$x
     #
     # Check: is new data format compatible with training format?
     #
-    allowNA = TRUE # is NA allowed in test data?
+    allowNA <- TRUE # is NA allowed in test data?
     varsInModel <- which(daisy.out$weights > 0)
     checkXnew(x_old, x, allowNA = allowNA,
               varsInModel = varsInModel)
@@ -106,10 +107,10 @@ daisy_vcr = function(x, daisy.out = NULL, type = NULL,
         any(ntyp == ""))
       stop(gettextf("invalid %s; must be named list",
                     sQuote("type")))
-    typelist = c("asymm", "symm", "nominal",
+    typelist <- c("asymm", "symm", "nominal",
                  "logratio", "ordratio", "ordinal")
     for (nt in ntyp) { # e.g. nt = "nominal"
-      if(!(nt %in% typelist)) stop(paste0(
+      if (!(nt %in% typelist)) stop(paste0(
         "type ",nt," is not allowed."))
       cvec <- type[[nt]]
       ct <- paste0("type$", nt)
@@ -158,11 +159,11 @@ daisy_vcr = function(x, daisy.out = NULL, type = NULL,
   }
   if (length(type)) {
     tT <- type$ordratio
-    if(is.null(tT)) tT <- type$ordinal # added
+    if (is.null(tT)) tT <- type$ordinal # added
     x[, names(type2[tT])] <- unclass(as.ordered(x[, names(type2[tT])]))
     type2[tT] <- "T"
     tL <- type$logratio
-    if(sum(as.vector(x[, names(type2[tL])]) <= 0) > 0) stop(
+    if (sum(as.vector(x[, names(type2[tL])]) <= 0) > 0) stop(
       "\nVariable(s) to be log-transformed are not always > 0.")
     x[, names(type2[tL])] <- log(x[, names(type2[tL])])
     type2[tL] <- "L"
@@ -200,12 +201,7 @@ daisy_vcr = function(x, daisy.out = NULL, type = NULL,
       colR   <- rep(1, ncol(x))
       colmin <- rep(0, ncol(x))
     }
-    # else { # scale robustly, yielding more farness outliers:
-    #   mads <- apply(x, 2, mad, na.rm = TRUE)
-    #   colmin <- apply(x, 2, median, na.rm = TRUE)
-    #   colR = matrix(c(colmin - mads, colmin + mads),
-    #                 nrow = 2, byrow = T)
-    # }
+
   } else {
     colR   <- daisy.out$colR
     colmin <- daisy.out$colmin
@@ -213,8 +209,6 @@ daisy_vcr = function(x, daisy.out = NULL, type = NULL,
   sx <- colR[2, ] - colmin
   if (any(sx == 0)) {sx[sx == 0] <- 1}
   #
-  # Scale the variables with nonzero weight:
-  # x <- scale(x, center = colmin, scale = sx)
   #
   for (j in seq_len(p)) { # iterate over the variables
     if (weights[j] > 0) { # skip variables with zero weight
@@ -222,36 +216,7 @@ daisy_vcr = function(x, daisy.out = NULL, type = NULL,
       if (tempType %in% c("I", "T", "L")) {
         # Only Interval/Ordinal/Log variables are scaled:
         x[, j] <- scale(x[, j], center = colmin[j], scale = sx[j])
-        #
-        # summary(x[, j])
-        # plot(x1[,j],x[,j],main=paste0("for ",colnames[j]," ",
-        #                               temptype)); abline(0,1)
-        #
-        # Should we truncate the new variables to fall inside the
-        # range of the training variables? This is a difficult choice.
-        # Both options have advantages and disadvantages. Not doing so
-        # can create big outliers, which may or may not be what we
-        # want. E.g. a pixel that took on only the values 0 and 1 may
-        # get a much bigger value in a new image... An intermediate
-        # choice is to set finite values in mybounds.
-        # if(!is.null(daisy.out) && !is.null(mybounds)){
-        #   # We could even apply mybounds to training data,
-        #   # especially when robust == T.
-        #   #
-        #   # mybounds = NULL corresponds to mybounds = c(-Inf, Inf).
-        #   #
-        #   if(!is.vector(mybounds)) stop(
-        #     "\nmybounds must be a vector.")
-        #   if(!is.numeric(mybounds)) stop(
-        #     "\nmybounds must contain numeric values.")
-        #   if(length(mybounds) != 2) stop(
-        #     "\nmybounds must contain 2 values.")
-        #   if(!(mybounds[1] < mybounds[2])) stop(
-        #     "\nmybounds must satisfy mybounds[1] < mybounds[2].")
-        #   trunca = function(y) {
-        #     pmin(pmax(y, mybounds[1]), mybounds[2]) }
-        #   x[, j] = trunca(x[, j])
-        # } # ends truncation
+
       } # ends if(type)
     } # ends if(weight > 0)
   } # ends loop over variables
@@ -270,7 +235,7 @@ daisy_vcr = function(x, daisy.out = NULL, type = NULL,
       # compute contribution to the numerator:
       if (tempType %in% c("A", "S", "N")) { # binary and nominal
         numtemp <- outer(tempVar, tempVar, "!=") + 0
-      } else { # Interval/Ordinal/Log: Manhattan distance
+      } else {# Interval/Ordinal/Log: Manhattan distance
         numtemp <- abs(outer(tempVar, tempVar, "-"))
       }
       # adjust denominator for asymmetric binary
@@ -301,7 +266,7 @@ daisy_vcr = function(x, daisy.out = NULL, type = NULL,
   attr(disv, "Metric") <- "mixed"
   attr(disv, "Types")  <- type2
   #
-  result = list(disv = disv, # the dissimilarity object
+  result <- list(disv = disv, # the dissimilarity object
                 type = type, # types of the variables
                 type2 = type2, # simpler version, as a check
                 colR = colR, # column ranges (scales)

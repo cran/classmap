@@ -36,20 +36,22 @@ Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing clas
 \examples{
 
 library(e1071)
-set.seed(1); X = matrix(rnorm(200*2),ncol=2)
-X[1:100,] = X[1:100,]+2
-X[101:150,] = X[101:150,]-2
-y = as.factor(c(rep("blue",150),rep("red",50))) # two classes
+set.seed(1); X <- matrix(rnorm(200 * 2), ncol = 2)
+X[1:100, ] <- X[1:100, ] + 2
+X[101:150, ] <- X[101:150, ] - 2
+y <- as.factor(c(rep("blue", 150), rep("red", 50))) # two classes
 # We now fit an SVM with radial basis kernel to the data:
 set.seed(1) # to make the result of svm() reproducible.
-svmfit = svm(y~., data=data.frame(X=X,y=y), scale=FALSE,
-             kernel="radial", cost=10, gamma=1, probability=TRUE)
-Kxx = makeKernel(X,svfit=svmfit)
+svmfit <- svm(y~.,  data = data.frame(X = X, y = y),  scale = FALSE,
+             kernel = "radial", cost = 10, gamma = 1, probability = TRUE)
+Kxx <- makeKernel(X, svfit = svmfit)
 # The result is a square kernel matrix:
 dim(Kxx) # 200 200
-Kxx[1:5,1:5]
+Kxx[1:5, 1:5]
 
 # For more examples, we refer to the vignette:
+\dontrun{
 vignette("Support_vector_machine_examples")
+}
 }
 

@@ -38,5 +38,7 @@ data(data_bookReviews)
 data_bookReviews[5, 1]
 
 # The data are used in:
+\dontrun{
 vignette("Support_vector_machine_examples")
+}
 }

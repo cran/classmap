@@ -43,11 +43,13 @@ https://www.kaggle.com/c/titanic/data
 
 \examples{
 data("data_titanic")
-traindata = data_titanic[which(data_titanic$dataType == "train"), -13]
-testdata = data_titanic[which(data_titanic$dataType == "test"), -13]
+traindata <- data_titanic[which(data_titanic$dataType == "train"), -13]
+testdata <- data_titanic[which(data_titanic$dataType == "test"), -13]
 str(traindata)
 table(traindata$y)
 
 # The data are used in:
+\dontrun{
 vignette("Rpart_examples")
+}
 }

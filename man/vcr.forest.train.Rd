@@ -69,21 +69,25 @@ Raymaekers J., Rousseeuw P.J.(2021). Silhouettes and quasi residual plots for ne
 \examples{
 library(randomForest)
 data("data_instagram")
-traindata = data_instagram[which(data_instagram$dataType == "train"), -13]
+traindata <- data_instagram[which(data_instagram$dataType == "train"), -13]
 set.seed(71) # randomForest is not deterministic
-rfout = randomForest(y ~ ., data=traindata, keep.forest=TRUE)
-mytype = list(symm = c(1, 5, 7, 8)) # These 4 columns are
+rfout <- randomForest(y~., data = traindata, keep.forest = TRUE)
+mytype <- list(symm = c(1, 5, 7, 8)) # These 4 columns are
 # (symmetric) binary variables. The variables that are not
 # listed are interval-scaled by default.
-x_train = traindata[, -12]
-y_train = traindata[, 12]
+x_train <- traindata[, -12]
+y_train <- traindata[, 12]
 # Prepare for visualization:
-vcrtrain = vcr.forest.train(X = x_train, y = y_train,
+vcrtrain <- vcr.forest.train(X = x_train, y = y_train,
                             trainfit = rfout, type = mytype)
 confmat.vcr(vcrtrain)
-stackedplot(vcrtrain, classCols = c(4,2))
-silplot(vcrtrain, classCols = c(4,2))
-classmap(vcrtrain, "genuine", classCols = c(4,2))
-classmap(vcrtrain, "fake", classCols = c(4,2))
-}
+stackedplot(vcrtrain, classCols = c(4, 2))
+silplot(vcrtrain, classCols = c(4, 2))
+classmap(vcrtrain, "genuine", classCols = c(4, 2))
+classmap(vcrtrain, "fake", classCols = c(4, 2))
 
+# For more examples, we refer to the vignette:
+\dontrun{
+vignette("Random_forest_examples")
+}
+}
