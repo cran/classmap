@@ -386,13 +386,9 @@ We now analyze the MNIST data, originally from the website of Yann LeCun. As the
 
 ```{r}
 
-mnist_url <- "https://wis.kuleuven.be/statdatascience/robust/data/mnist-rdata"
-url.exists <- suppressWarnings(try(open.connection(url(mnist_url), open = "rt", timeout = 2),  silent = TRUE)[1], classes = "warning")
+mnist_url <- url("https://wis.kuleuven.be/statdatascience/robust/data/mnist-rdata")
+load(mnist_url)
 
-if (is.null(url.exists)) {load(url(mnist_url))} else {
-  print(paste("The data source ", mnist_url, "is not active at the moment. The example can nevertheless be reproduced by downloading the mnist data from another source, formatting the training data to dimensions 60000 x 28 x 28, and running the code below."))
-}
-close(url(mnist_url))
 X_train <- mnist$train$x
 y_train <- as.factor(mnist$train$y)
 

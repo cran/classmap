@@ -1,4 +1,4 @@
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 knitr::opts_chunk$set(
 fig.width  = 5 ,
 fig.height = 3.5,
@@ -132,10 +132,12 @@ silplot(vcr.test, classCols = cols,
 classmap(vcr.train, 1, classCols = cols)
 classmap(vcr.test, 1, classCols = cols) 
 
-## ---- error = TRUE------------------------------------------------------------
+## ----error = TRUE-------------------------------------------------------------
+try({
 classmap(vcr.train, 2, classCols = cols)
 classmap(vcr.test, 2, classCols = cols)
 # Class number 2 with label versicolor has no objects to visualize.
+})
 
 ## -----------------------------------------------------------------------------
 classmap(vcr.train, 3, classCols = cols)
@@ -182,7 +184,7 @@ silplot(vcr.obj, classCols = cols,
         main = "Silhouette plot of kNN on spam data")      
 # dev.off()
 
-## ---- fig.height = 4, fig.width = 6-------------------------------------------
+## ----fig.height = 4, fig.width = 6--------------------------------------------
 # To identify the points that stand out:
 # classmap(vcr.obj, 1, classCols = cols, identify = T)
 # Press "Esc" to get out.
@@ -211,7 +213,7 @@ par(oldpar)
 # markInds = which(y == "nonspam")[indstomark]
 # X[markInds, ] 
 
-## ---- fig.height = 4, fig.width = 6-------------------------------------------
+## ----fig.height = 4, fig.width = 6--------------------------------------------
 #
 # To identify the points that stand out:
 # classmap(vcr.obj, 2, classCols = cols, identify = TRUE)

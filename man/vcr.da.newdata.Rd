@@ -38,7 +38,7 @@ A list with components: \cr
 \item{lAlt}{log of mixture density of each case in its alternative class. Is \code{NA} for cases with missing \code{ynew}.}
 }
 \references{
-Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing classification results. \emph{Technometrics}, appeared online. \doi{10.1080/00401706.2021.1927849}{(link to open access pdf)}
+Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing classification results. \emph{Technometrics}, 64(2), 151–165. \doi{10.1080/00401706.2021.1927849}
 }
 
 \author{

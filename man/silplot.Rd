@@ -41,7 +41,7 @@ A ggplot object containing the silhouette plot.
 }
 
 \references{
-Raymaekers J., Rousseeuw P.J.(2021). Silhouettes and quasi residual plots for neural nets and tree-based classifiers. \href{https://arxiv.org/abs/2106.08814}{(link to open access pdf)}
+Raymaekers J., Rousseeuw P.J.(2021). Silhouettes and quasi residual plots for neural nets and tree-based classifiers. \emph{Journal of Computational and Graphical Statistics}, 31(4), 1332–1343. \doi{10.1080/10618600.2022.2050249}
 }
 
 \author{

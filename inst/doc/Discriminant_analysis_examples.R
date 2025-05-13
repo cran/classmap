@@ -1,4 +1,4 @@
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 knitr::opts_chunk$set(
  fig.width  = 5 ,
  fig.height = 3.5,
@@ -124,9 +124,11 @@ silplot(vcr.test, classCols = cols,
 classmap(vcr.train, 1, classCols = cols)
 classmap(vcr.test, 1, classCols = cols) 
 
-## ---- error = TRUE------------------------------------------------------------
+## ----error = TRUE-------------------------------------------------------------
+try({
 classmap(vcr.train, 2, classCols = cols)
 classmap(vcr.test, 2, classCols = cols)
+})
 
 ## -----------------------------------------------------------------------------
 classmap(vcr.train, 3, classCols = cols)
@@ -210,7 +212,7 @@ legend("topleft", fill = cols[1:4], legend = labels,
 # dev.off()
 par(oldpar)
 
-## ---- fig.height = 8, fig.width = 8-------------------------------------------
+## ----fig.height = 8, fig.width = 8--------------------------------------------
 
 #
 # pdf(file = "Floralbuds_all_class_maps.pdf", width = 7, height = 7)
@@ -251,13 +253,9 @@ par(oldpar)
 
 ## -----------------------------------------------------------------------------
 
-mnist_url <- "https://wis.kuleuven.be/statdatascience/robust/data/mnist-rdata"
-url.exists <- suppressWarnings(try(open.connection(url(mnist_url), open = "rt", timeout = 2),  silent = TRUE)[1], classes = "warning")
+mnist_url <- url("https://wis.kuleuven.be/statdatascience/robust/data/mnist-rdata")
+load(mnist_url)
 
-if (is.null(url.exists)) {load(url(mnist_url))} else {
-  print(paste("The data source ", mnist_url, "is not active at the moment. The example can nevertheless be reproduced by downloading the mnist data from another source, formatting the training data to dimensions 60000 x 28 x 28, and running the code below."))
-}
-close(url(mnist_url))
 X_train <- mnist$train$x
 y_train <- as.factor(mnist$train$y)
 
@@ -266,7 +264,7 @@ head(y_train)
 dim(X_train) # 60000    28    28
 length(y_train) # 60000
 
-## ---- fig.height = 1, fig.width = 1-------------------------------------------
+## ----fig.height = 1, fig.width = 1--------------------------------------------
 
 plotImage = function(tempImage) {
   tdm = reshape2::melt(apply((tempImage), 2, rev))
@@ -287,7 +285,7 @@ plotImage(X_train[1, , ])
 plotImage(X_train[2, , ])
 plotImage(X_train[3, , ])
 
-## ---- fig.height = 2, fig.width = 5-------------------------------------------
+## ----fig.height = 2, fig.width = 5--------------------------------------------
 # Change the dimensions of X for the sequel:
 dim(X_train) <- c(60000, 28 * 28)
 dim(X_train) # 60000    784
@@ -365,7 +363,7 @@ showdigit <- function(digit=digit, i, plotIt = TRUE) {
 }
 
 
-## ---- fig.height = 4, fig.width = 6-------------------------------------------
+## ----fig.height = 4, fig.width = 6--------------------------------------------
 digit <- 0
 #
 # To identify outliers:
@@ -393,7 +391,7 @@ legend("left", fill = cols,
 # dev.off()
 par(oldpar)
 
-## ---- fig.height = 2, fig.width = 5-------------------------------------------
+## ----fig.height = 2, fig.width = 5--------------------------------------------
 pred <- vcr.train$pred # needed for discussion plots
 tempPreds <- (pred[which(y_train == digit)])[indstomark]
 discussionPlots <- list()
@@ -410,7 +408,7 @@ discussionPlot <- grid.arrange(grobs = discussionPlots, ncol = 5)
 #        height = (length(indstomark) %/% 5 +
 #                    (length(indstomark) %% 5 > 0)))
 
-## ---- fig.height = 4, fig.width = 6-------------------------------------------
+## ----fig.height = 4, fig.width = 6--------------------------------------------
 
 digit <- 1
 # pdf(paste0("MNIST_classmap_digit", digit, ".pdf"), width = 7, height = 7)
@@ -424,7 +422,7 @@ legend("left", fill = cols,
 # dev.off()
 par(oldpar)
 
-## ---- fig.height = 13, fig.width = 8------------------------------------------
+## ----fig.height = 13, fig.width = 8-------------------------------------------
 # indices of the 1s predicted as 2 (takes a while):
 #
 indstomark <- which(vcr.train$predint[which(y_train == digit)] == 3)
@@ -450,7 +448,7 @@ discussionPlot <- grid.arrange(grobs = discussionPlots,
 # The digits 1 predicted as a 2 are mostly ones written with
 # a horizontal line at the bottom.
 
-## ---- fig.height = 4, fig.width = 6-------------------------------------------
+## ----fig.height = 4, fig.width = 6--------------------------------------------
 digit <- 2
 # To identify outliers:
 # classmap(vcr.train, digit + 1, classCols = cols, identify = TRUE)
@@ -475,7 +473,7 @@ legend("right", fill = cols,
 # dev.off()
 par(oldpar)
 
-## ---- fig.height = 2, fig.width = 5-------------------------------------------
+## ----fig.height = 2, fig.width = 5--------------------------------------------
 pred <- vcr.train$pred # needed for discussion plots
 tempPreds    <- (pred[which(y_train == digit)])[indstomark]
 discussionPlots <- list()
@@ -493,7 +491,7 @@ discussionPlot <- grid.arrange(grobs = discussionPlots,
 #        height = (length(indstomark) %/% 5 +
 #                    (length(indstomark) %% 5 > 0)))
 
-## ---- fig.height = 1, fig.width = 1-------------------------------------------
+## ----fig.height = 1, fig.width = 1--------------------------------------------
 X_test <- mnist$test$x
 y_test <- as.factor(mnist$test$y)
 
@@ -532,7 +530,7 @@ silplot(vcr.test, classCols = cols,
         main = "Silhouette plot of QDA on MNIST test data")      
 #dev.off()
 
-## ---- fig.height = 4, fig.width = 6-------------------------------------------
+## ----fig.height = 4, fig.width = 6--------------------------------------------
 showdigit_test <- function(digit = digit, i, plotIt = TRUE) {
   idx = which(y_test == digit)[i]
   # wnq(paste("Estimated digit: ", as.numeric(vcr.test$pred[idx]), sep = ""))
@@ -564,7 +562,7 @@ legend("left", fill = cols,
 # dev.off()
 par(oldpar)
 
-## ---- fig.height = 2, fig.width = 5-------------------------------------------
+## ----fig.height = 2, fig.width = 5--------------------------------------------
 pred <- vcr.test$pred # needed for discussion plots
 tempPreds <- (pred[which(y_test == digit)])[indstomark]
 discussionPlots <- list()
@@ -582,7 +580,7 @@ discussionPlot <- grid.arrange(grobs = discussionPlots,
 #        height = (length(indstomark) %/% 5 +
 #                    (length(indstomark) %% 5 > 0)))
 
-## ---- fig.height = 4, fig.width = 6-------------------------------------------
+## ----fig.height = 4, fig.width = 6--------------------------------------------
 digit <- 3
 # classmap(vcr.test, digit + 1, classCols = cols, identify = TRUE)
 # pdf(paste0("MNISTtest_classmap_digit", digit, ".pdf"))
@@ -606,7 +604,7 @@ legend("right", fill = cols,
 # dev.off()
 par(oldpar)
 
-## ---- fig.height = 2, fig.width = 5-------------------------------------------
+## ----fig.height = 2, fig.width = 5--------------------------------------------
 pred <- vcr.test$pred # needed for discussion plots
 tempPreds    <- (pred[which(y_test == digit)])[indstomark]
 discussionPlots <- list()
