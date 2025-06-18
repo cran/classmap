@@ -1,8 +1,8 @@
 
 import("ggplot2")
-import("e1071")
 import("gridExtra")
 import("rpart")
+importFrom("e1071", "svm")
 importFrom("robustbase", "covMcd")
 importFrom("randomForest", "randomForest", "importance")
 importFrom("cellWise", "transfo", "truncPC")

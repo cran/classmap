@@ -1,8 +1,8 @@
 Package: classmap
 Type: Package
 Title: Visualizing Classification Results
-Date: 2025-05-13
-Version: 1.2.4
+Date: 2025-06-16
+Version: 1.2.5
 Authors@R: c(
             person(given="Jakob",family="Raymaekers", role = c("aut","cre"),
             email="jakob.raymaekers@kuleuven.be"),
@@ -11,7 +11,8 @@ Authors@R: c(
 Author: Jakob Raymaekers [aut, cre],
   Peter Rousseeuw [aut]
 Depends: R (>= 4.1.0)
-Suggests: knitr, reshape2, svd, rpart.plot, nnet, robCompositions
+Suggests: knitr, reshape2, svd, rpart.plot, nnet, robCompositions,
+        rmarkdown
 Imports: stats, graphics, ggplot2, robustbase, e1071, cellWise,
         cluster, kernlab, gridExtra, rpart, randomForest
 Maintainer: Jakob Raymaekers <jakob.raymaekers@kuleuven.be>
@@ -28,9 +29,9 @@ URL: https://doi.org/10.1080/00401706.2021.1927849,
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
-VignetteBuilder: knitr
+VignetteBuilder: knitr, rmarkdown
 RoxygenNote: 7.1.2
 NeedsCompilation: no
-Packaged: 2025-05-13 13:33:57 UTC; Jakob Raymaekers
+Packaged: 2025-06-17 10:28:32 UTC; Jakob Raymaekers
 Repository: CRAN
-Date/Publication: 2025-05-13 22:00:02 UTC
+Date/Publication: 2025-06-18 07:50:13 UTC
