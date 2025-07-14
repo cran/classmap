@@ -338,8 +338,7 @@ https://arxiv.org/abs/1008.0716
 
 The full dataset has been used for a variety of things, including classification using svm.
 A list of citations:
-https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&
-  sciodt=0%2C5&cites=4738650459241064524&scipsc=1&q=svm+&btnG=
+https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&sciodt=0%2C5&cites=4738650459241064524&scipsc=1&q=svm+&btnG=
 
 The subset was chosen small enough to keep the computation
 time low, while still containing the examples in the paper.

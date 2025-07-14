@@ -12,7 +12,7 @@
 
 <meta name="author" content="Raymaekers, J. and Rousseeuw, P.J." />
 
-<meta name="date" content="2025-06-17" />
+<meta name="date" content="2025-07-14" />
 
 <title>Support_vector_machine_examples</title>
 
@@ -340,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Support_vector_machine_examples</h1>
 <h4 class="author">Raymaekers, J. and Rousseeuw, P.J.</h4>
-<h4 class="date">2025-06-17</h4>
+<h4 class="date">2025-07-14</h4>
 
 
 
@@ -751,8 +751,7 @@ trained using a gaussian kernel on the original data:</p>
 <p>This is a subset of the data used in the paper, which was assembled
 by Prettenhofer and Stein (2010), see <a href="https://arxiv.org/abs/1008.0716" class="uri">https://arxiv.org/abs/1008.0716</a></p>
 <p>The full dataset has been used for a variety of things, including
-classification using svm. A list of citations: <a href="https://scholar.google.com/scholar?hl=en&amp;as_sdt=0%2C5&amp;" class="uri">https://scholar.google.com/scholar?hl=en&amp;as_sdt=0%2C5&amp;</a>
-sciodt=0%2C5&amp;cites=4738650459241064524&amp;scipsc=1&amp;q=svm+&amp;btnG=</p>
+classification using svm. A list of citations: <a href="https://scholar.google.com/scholar?hl=en&amp;as_sdt=0%2C5&amp;sciodt=0%2C5&amp;cites=4738650459241064524&amp;scipsc=1&amp;q=svm+&amp;btnG=" class="uri">https://scholar.google.com/scholar?hl=en&amp;as_sdt=0%2C5&amp;sciodt=0%2C5&amp;cites=4738650459241064524&amp;scipsc=1&amp;q=svm+&amp;btnG=</a></p>
 <p>The subset was chosen small enough to keep the computation time low,
 while still containing the examples in the paper.</p>
 <p>First we define the colors and inspect an example of a book
@@ -778,7 +777,7 @@ the spectrum kernel with length 7:</p>
 <span id="cb143-2"><a href="#cb143-2" tabindex="-1"></a>Kr_train <span class="ot">&lt;-</span> kernlab<span class="sc">::</span><span class="fu">kernelMatrix</span>(<span class="at">kernel =</span> strdot, <span class="at">x =</span> X)</span>
 <span id="cb143-3"><a href="#cb143-3" tabindex="-1"></a>(<span class="fu">proc.time</span>() <span class="sc">-</span> ptm)[<span class="dv">3</span>] </span></code></pre></div>
 <pre><code>## elapsed 
-##   29.43</code></pre>
+##   22.36</code></pre>
 <div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="#cb145-1" tabindex="-1"></a><span class="fu">dim</span>(Kr_train) </span></code></pre></div>
 <pre><code>## [1] 500 500</code></pre>
 <p>Using the makeFV() function, we can compute the corresponding points
@@ -841,7 +840,7 @@ takes roughly a minute:</p>
 <span id="cb163-2"><a href="#cb163-2" tabindex="-1"></a>Kr_test <span class="ot">&lt;-</span> kernlab<span class="sc">::</span><span class="fu">kernelMatrix</span>(<span class="at">kernel =</span> strdot, <span class="at">x =</span> Xnew, <span class="at">y =</span> X)</span>
 <span id="cb163-3"><a href="#cb163-3" tabindex="-1"></a>(<span class="fu">proc.time</span>() <span class="sc">-</span> ptm)[<span class="dv">3</span>] </span></code></pre></div>
 <pre><code>## elapsed 
-##   66.65</code></pre>
+##    47.7</code></pre>
 <p>Now we compute feature vectors of the test set. These features live
 in the same space as the Xf of the training data.</p>
 <div class="sourceCode" id="cb165"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb165-1"><a href="#cb165-1" tabindex="-1"></a>FVtest <span class="ot">&lt;-</span> <span class="fu">makeFV</span>(<span class="at">kmat =</span> Kr_test, <span class="at">transfmat =</span> outFV<span class="sc">$</span>transfmat)</span>

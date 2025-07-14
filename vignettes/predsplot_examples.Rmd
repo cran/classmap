@@ -1,0 +1,406 @@
+---
+title: "predsplot_examples"
+author: "Rousseeuw, P.J."
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{predsplot_examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+ fig.width  = 5 ,
+ fig.height = 3.5,
+ fig.align  = 'center'
+)
+oldpar <- list(mar = par()$mar, mfrow = par()$mfrow)
+```
+
+
+```{r}
+library(classmap)
+```
+
+# TopGear data
+
+
+We start by loading the data, and selecting the relevant features.
+As pre-processing, we set values of accel==0 to missing because it is impossible.
+We also remove the incorrect weight of the Peugeot 107.
+```{r}
+data(TopGear, package = "robustHD")
+cars = TopGear; rm(TopGear)
+dim(cars) # [1] 297  32
+rownames(cars) = paste(cars[,1],cars[,2])
+# Now the rownames are make and model of the cars.
+colnames(cars)
+colnames(cars)[4:17] = c("fuel","price","cyl","displ","drive",
+                         "hp","torque","accel","topspeed",
+                         "MPG","weight","length","width",
+                         "height")
+summary(cars$accel) # zero minimum is impossible
+rownames(cars)[which(cars$accel == 0)]
+# [1] "Citroen C5 Tourer" "Ford Mondeo"   "Lotus Elise"
+# [4] "Renault Twizy"     "Ssangyong Rodius"
+cars$accel[cars$accel == 0] = NA
+summary(cars$accel) # OK
+
+cars$weight[order(cars$weight)[1:4]]
+rownames(cars)[order(cars$weight)[1:4]]
+cars$weight[cars$weight == 210] = NA
+summary(cars$weight) # OK
+# save(cars, file = "Topgear.RData")
+# load("Topgear.RData")
+```
+
+## Numerical example in the introduction
+
+
+```{r}
+summary(cars$topspeed) # in mph
+summary(cars$displ)    # in cc
+summary(cars$length)   # in mm
+cars$length = cars$length/1000 # in meters
+
+fit = lm(hp ~ topspeed + length + displ, data = cars)
+summary(fit)
+
+predsplot(fit, main = "Top Gear data")
+
+fact = 0.51
+width = fact*10; height = fact*8
+maxnchar = 6
+main = "Top Gear data"
+pdf(file = "topgear_numerical_predsplot.pdf",
+    width = width, height = height)
+predsplot(fit, main=main, maxchar.level = maxnchar)
+dev.off()
+
+
+predscor(fit, sort.by.stdev = FALSE) 
+# fact = 0.6
+# width = fact*10; height = fact*8
+# pdf(file = "topgear_numerical_predscor.pdf", 
+#     width = height, height = height)
+# predscor(fit, sort.by.stdev = FALSE)
+# dev.off()
+
+```
+
+## Figure 2 and TopGear figures in Supplementary Material:
+
+
+```{r}
+cars$GPM = 1/cars$MPG
+
+fit4 = lm(GPM ~ accel + drive + weight + fuel, data = cars)
+summary(fit4)
+
+## Figure 2:
+## 
+fact = 0.52
+width = fact*10; height = fact*8
+maxnchar = 6
+main = "Top Gear data"
+# pdf(file = "topgear_4_predsplot.pdf",
+#     width = width, height = height)
+predsplot(fit4, main=main, maxchar.level = maxnchar)
+# dev.off()
+```
+
+
+## Three figures in the Supplementary Material:
+
+```{r}
+## 
+# fact = 0.6
+# width = fact*10; height = fact*8
+# pdf(file = "topgear_4_predscor.pdf", 
+#     width = height, height = height)
+predscor(fit4, sort.by.stdev = FALSE)
+# dev.off()
+
+car = "Bentley Continental"
+# pdf(file = "topgear_4_predsplot_1_dens.pdf",
+#     width = width, height = height)
+predsplot(fit4, main = main, casetoshow=car, 
+          displaytype = "density", 
+          maxchar.level = maxnchar, 
+          xlab = paste0("prediction for ",car))
+# dev.off()
+
+car = "Kia Rio"
+# pdf(file = "topgear_4_predsplot_2_stairs.pdf",
+#     width = width, height = height)
+predsplot(fit4, main = main, casetoshow=car, 
+          staircase = TRUE, maxchar.level = maxnchar, 
+          xlab = paste0("prediction for ",car))
+# dev.off()
+```
+
+## Test combination of expressions and types
+
+We add a logical variable (AlarmSystem) as well as a character variable (SatNav)
+
+```{r}
+summary(cars$AlarmSystem) 
+cars$alarm = (cars$AlarmSystem == "standard")
+summary(cars$alarm)
+
+summary(cars$SatNav)
+cars$navig = "y"
+cars$navig[cars$SatNav == "no"] = "n"
+summary(cars$navig)
+
+table(cars$navig)
+class(cars$navig) 
+str(cars)
+
+fitcombin = lm(1/MPG ~ accel + log(weight) + accel:torque + alarm + navig, data = cars)
+summary(fitcombin)
+
+fact = 0.45
+width = fact*10; height = fact*8
+main = "Example with transformation, interaction, logical, character"
+# pdf(file = "topgear_logical+char_predsplot.pdf", width = width, height = height)
+predsplot(fitcombin, main=main)
+# dev.off()  
+
+fact = 0.6
+width = fact*10; height = fact*8
+# pdf(file = "topgear_logical+char_predscor.pdf",
+#     width = height, height = height)
+predscor(fitcombin)
+# dev.off()
+
+```
+
+# Titanic data
+
+
+We start by loading the data, turning the pclass and sex variables into factors.
+
+```{r}
+data(data_titanic, package = "classmap")
+titanic = data_titanic; rm(data_titanic)
+dim(titanic) # 1309  13
+# A data frame with 1309 observations on the following variables.
+#   passengerId: a unique identifier for each passenger.
+#   pclass: travel class of the passenger.
+#   name: name of the passenger.
+#   sex: sex of the passenger.
+#   age: age of the passenger.
+#   sibsp: number of siblings and spouses traveling with the passenger.
+#   parch: number of parents and children traveling with the passenger.
+#   ticket: ticket number of the passenger.
+#   fare: fare paid for the ticket.
+#   Cabin: cabin number of the passenger.
+#   embarked: Port of embarkation. Takes the values
+#             C (Cherbourg), Q (Queenstown) and
+#             S (Southampton).
+#   y: factor indicating casualty or survivor.
+#   dataType: vector taking the values “train” or “test”
+#             indicating whether the observation belongs
+#             to training or test data.
+#
+colnames(titanic) = c("passengerId","pclass","name","sex",
+                   "age", "sibsp", "parch", "ticket",
+                   "fare", "cabin", "embarked", "survival",
+                   "dataType")
+str(titanic)
+
+unique(titanic$pclass) # 3 1 2
+titanic$pclass = factor(titanic$pclass, levels = unique(titanic$pclass))
+#
+
+unique(titanic$sex) 
+titanic$sex = factor(titanic$sex, levels = unique(titanic$sex) )
+titanic$sex = factor(titanic$sex, labels = c("M","F"))
+head(titanic)
+# save(titanic, file="Titanic.RData")
+# load("Titanic.RData")
+```
+
+Now fit a logistic regression model.
+
+```{r}
+fit5 <- glm(survival ~ sex + age + sibsp + parch + pclass,
+            family=binomial, data = titanic)
+summary(fit5)
+```
+
+## Figure 3:
+
+```{r} 
+fact = 0.5
+width = fact*10; height = fact*8
+main = "Titanic data"
+# pdf(file = "titanic_5_predsplot_dens.pdf",
+#     width = width, height = height)
+predsplot(fit5, main=main, displaytype = "density")
+
+# The glm fit used the logit link function.
+# dev.off()
+
+# With other options for density estimation:
+predsplot(fit5, main=main, displaytype = "density",
+          bw = "SJ", adjust = 0.5)
+```
+
+
+## Three figures in Supplementary Material:
+
+```{r} 
+# pdf(file = "titanic_5_predsplot_1.pdf",
+#     width = width, height = height)
+predsplot(fit5, main = main, casetoshow=1)
+# dev.off()
+
+# pdf(file = "titanic_5_predsplot_2_stairs.pdf",
+#     width = width, height = height)
+predsplot(fit5, main = main, casetoshow=2, staircase = TRUE)
+# dev.off()
+
+# fact = 0.6
+# width = fact*10; height = fact*8
+# pdf(file = "titanic_5_predscor.pdf", 
+#     width = height, height = height)
+predscor(fit5, sort.by.stdev = FALSE)
+# dev.off()
+```
+
+# German credit data
+
+
+```{r}
+data(german.credit, package = "fairml")
+credit = german.credit; rm(german.credit)
+dim(credit) # 1000 21
+str(credit)
+#
+# Shorten variable names for plotting:
+colnames(credit) <- c("checking","months","history","purpose","amount","savings","employment","rate","guarantors","residence","property","age","inst_plans","housing","nloans","job","nclients","phone","foreign","credit","sex")
+#
+# Give factors sex and purpose shorter labels for plotting:
+credit$sex = factor(as.numeric(credit$sex), labels = c("F","M"))
+levels(credit$purpose)
+# [10] "retrainin"
+levels(credit$purpose) = c("business","n.car","u.car","appliances","education","furniture","other","TV","repairs","retraining")
+# save(credit, file = "German_credit.RData")
+# load("German_credit.RData")
+```
+
+Now fit a logistic regression model
+
+```{r}
+fit7 <- glm(credit ~ months + purpose + amount + rate + age +
+            nclients + sex, family=binomial, data = credit)
+```
+
+ 
+## Figure in Supplementary Material:
+
+```{r} 
+main = "German credit data"
+# fact = 0.48
+# width = fact*10; height = fact*8
+# pdf(file = "germancredit_7_predsplot.pdf",
+#     width = width, height = height)
+predsplot(fit7, main = main)       
+# dev.off()
+```
+
+
+## Figure 4:
+```{r} 
+# fact = 0.48
+# width = fact*10; height = fact*8
+# pdf(file = "germancredit_7_predsplot_1.pdf",
+#     width = width, height = height)
+predsplot(fit7, main = main, casetoshow=1, 
+          displaytype = "density")
+# dev.off()
+```
+
+## Figure 5:
+```{r} 
+# pdf(file = "germancredit_7_predsplot_2_stairs.pdf",
+#     width = width, height = height)
+predsplot(fit7, main = main, casetoshow=2, staircase = TRUE) 
+# dev.off()
+```
+
+## Figure 6:
+
+```{r}
+# fact = 0.6
+# width = fact*10; height = fact*8
+# pdf(file = "germancredit_7_predscor_equalsizes.pdf", 
+#     width = height, height = height)
+predscor(fit7, sort.by.stdev = FALSE, cell.length = "equal")
+# dev.off()
+#
+# pdf(file = "germancredit_7_predscor.pdf", 
+#     width = height, height = height)
+predscor(fit7, sort.by.stdev = FALSE)
+# dev.off()
+```
+
+## Two figures in Supplementary Material:
+```{r} 
+## Prediction for a new case:
+newc = list("u.car", 36, 2, 6000, 55, "F", 1)
+names(newc) = c("purpose","months","rate","amount",
+                "age","sex","nclients")
+# fact = 0.48
+# width = fact*10; height = fact*8
+# pdf(file = "germancredit_7_predsplot_new_stairs.pdf",
+#     width = width, height = height)
+predsplot(fit7, main = main, casetoshow = newc, 
+          staircase = TRUE)
+# dev.off()
+
+## Figure with profile:
+# pdf(file = "germancredit_7_predsplot_1_dens_profile.pdf",
+#     width = width, height = height)
+predsplot(fit7, main = main, casetoshow=1, 
+               displaytype = "density", profile = TRUE)
+# dev.off()
+
+```
+
+# Artificial example to illustrate high correlation:
+
+
+```{r}
+credit$x1 = credit$months + credit$nclients
+credit$x2 = credit$months - credit$nclients
+cor(credit$x1,credit$x2) # 0.998199
+# But minus that for prediction terms!
+
+fitart <- glm(credit ~ x1 + x2 + purpose + amount + rate + age +
+           sex, family=binomial, data = credit)
+
+## Figure 7:
+## 
+# fact = 0.48
+# width = fact*10; height = fact*8
+# main = "German credit data with artificial variables x1 and x2"
+# pdf(file = "germancredit_7_artif_predsplot.pdf", 
+#     width = width, height = height)
+predsplot(fitart, main = main)
+# dev.off()
+
+## Figure 8:
+## 
+# fact = 0.6
+# width = fact*10; height = fact*8
+# pdf(file = "germancredit_7_artif_predscor.pdf", 
+#     width = height, height = height)
+predscor(fitart, sort.by.stdev = FALSE)
+# dev.off()
+
+```
+

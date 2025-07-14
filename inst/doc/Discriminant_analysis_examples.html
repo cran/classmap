@@ -12,7 +12,7 @@
 
 <meta name="author" content="Raymaekers, J. and Rousseeuw, P.J." />
 
-<meta name="date" content="2025-06-17" />
+<meta name="date" content="2025-07-14" />
 
 <title>Discriminant_analysis_examples</title>
 
@@ -340,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Discriminant_analysis_examples</h1>
 <h4 class="author">Raymaekers, J. and Rousseeuw, P.J.</h4>
-<h4 class="date">2025-06-17</h4>
+<h4 class="date">2025-07-14</h4>
 
 
 
@@ -913,7 +913,7 @@ the data by PCA.</p>
 <span id="cb127-2"><a href="#cb127-2" tabindex="-1"></a>svd.out <span class="ot">&lt;-</span> svd<span class="sc">::</span><span class="fu">propack.svd</span>(X_train, <span class="at">neig =</span> <span class="dv">50</span>)</span>
 <span id="cb127-3"><a href="#cb127-3" tabindex="-1"></a>(<span class="fu">proc.time</span>() <span class="sc">-</span> ptm)[<span class="dv">3</span>]</span></code></pre></div>
 <pre><code>## elapsed 
-##   38.11</code></pre>
+##   23.17</code></pre>
 <div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="#cb129-1" tabindex="-1"></a>loadings <span class="ot">&lt;-</span> svd.out<span class="sc">$</span>v</span>
 <span id="cb129-2"><a href="#cb129-2" tabindex="-1"></a><span class="fu">rm</span>(svd.out)</span>
 <span id="cb129-3"><a href="#cb129-3" tabindex="-1"></a>dataProj <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(X_train <span class="sc">%*%</span> loadings)</span>

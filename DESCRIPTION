@@ -2,7 +2,7 @@ Package: classmap
 Type: Package
 Title: Visualizing Classification Results
 Date: 2025-06-16
-Version: 1.2.5
+Version: 1.2.6
 Authors@R: c(
             person(given="Jakob",family="Raymaekers", role = c("aut","cre"),
             email="jakob.raymaekers@kuleuven.be"),
@@ -12,26 +12,27 @@ Author: Jakob Raymaekers [aut, cre],
   Peter Rousseeuw [aut]
 Depends: R (>= 4.1.0)
 Suggests: knitr, reshape2, svd, rpart.plot, nnet, robCompositions,
-        rmarkdown
+        rmarkdown, fairml, robustHD
 Imports: stats, graphics, ggplot2, robustbase, e1071, cellWise,
-        cluster, kernlab, gridExtra, rpart, randomForest
+        cluster, kernlab, gridExtra, rpart, randomForest, scales
 Maintainer: Jakob Raymaekers <jakob.raymaekers@kuleuven.be>
-Description: Tools to visualize the results of a classification of cases.
-    The graphical displays include stacked plots, silhouette plots, quasi residual plots, and class maps.
-    Implements the techniques described and illustrated in Raymaekers J., Rousseeuw P.J., Hubert M. (2021). Class maps for visualizing classification results. \emph{Technometrics}, 64(2), 151–165. \doi{10.1080/00401706.2021.1927849}
- (open access) and Raymaekers J., Rousseeuw P.J.(2021). Silhouettes and quasi residual plots for neural nets and tree-based classifiers. \emph{Journal of Computational and Graphical Statistics}, 31(4), 1332–1343. \doi{10.1080/10618600.2022.2050249}.
+Description: Tools to visualize the results of a classification or a regression.
+    The graphical displays include stacked plots, silhouette plots, quasi residual plots, class maps, predictions plots, and predictions correlation plots.
+    Implements the techniques described and illustrated in Raymaekers J., Rousseeuw P.J., Hubert M. (2022). Class maps for visualizing classification results. \emph{Technometrics}, 64(2), 151–165. \doi{10.1080/00401706.2021.1927849}
+ (open access), Raymaekers J., Rousseeuw P.J.(2022). Silhouettes and quasi residual plots for neural nets and tree-based classifiers. \emph{Journal of Computational and Graphical Statistics}, 31(4), 1332–1343. \doi{10.1080/10618600.2022.2050249}, and Rousseeuw, P.J. (2025). Explainable Linear and Generalized Linear Models by the Predictions Plot. <doi:10.48550/arXiv.2412.16980> (open access).
  Examples can be found in the vignettes:
     "Discriminant_analysis_examples","K_nearest_neighbors_examples",
     "Support_vector_machine_examples", "Rpart_examples", "Random_forest_examples",
-    and "Neural_net_examples".
+    "Neural_net_examples", and "predsplot_examples".
 URL: https://doi.org/10.1080/00401706.2021.1927849,
-        https://doi.org/10.1080/10618600.2022.2050249
+        https://doi.org/10.1080/10618600.2022.2050249,
+        https://arxiv.org/abs/2412.16980
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr, rmarkdown
 RoxygenNote: 7.1.2
 NeedsCompilation: no
-Packaged: 2025-06-17 10:28:32 UTC; Jakob Raymaekers
+Packaged: 2025-07-14 13:32:21 UTC; Jakob Raymaekers
 Repository: CRAN
-Date/Publication: 2025-06-18 07:50:13 UTC
+Date/Publication: 2025-07-14 19:10:09 UTC

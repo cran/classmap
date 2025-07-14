@@ -7,13 +7,16 @@ importFrom("robustbase", "covMcd")
 importFrom("randomForest", "randomForest", "importance")
 importFrom("cellWise", "transfo", "truncPC")
 importFrom("cluster", "daisy")
-importFrom("grDevices", "adjustcolor", "rainbow")
+importFrom("grDevices", "adjustcolor", "rainbow", "colorRampPalette")
 importFrom("graphics", "abline", "axis", "par", "rect", "title", "lines",
-           "plot")
+           "plot", "layout", "image", "mtext", "hist","strwidth", "curve")
 importFrom("stats", "coef", "cov", "dist", "mad", "mahalanobis",
                "median", "pnorm", "prcomp", "qnorm", "sd", "predict",
-           "as.dist", "loess", "quantile")
+           "as.dist", "loess", "quantile", "na.omit", "terms.formula",
+           "na.pass", "cor", "as.dendrogram", "hclust", "reorder", "order.dendrogram",
+            "model.matrix")
 importFrom("kernlab", "stringdot", "kernelMatrix")
+importFrom("scales", "breaks_extended")
 
 export(makeKernel)
 export(makeFV)
@@ -42,3 +45,6 @@ export(vcr.neural.newdata)
 
 export(silplot)
 export(qresplot)
+
+export(predsplot)
+export(predscor)
